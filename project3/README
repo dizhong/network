@@ -1,0 +1,40 @@
+Generally, I plan to generalize the experiment by varying the TCP/CBR flow start times, and sometimes the bandwidth of the TCP/CBR flows too. Each varient of the experiment would be varied 30 times, and each experiment would be run for 5 seconds (or 1 second or some other number if it seemed more fitting).
+
+Experiment 1
+For each of the TCP varients, I would vary both the TCP/CBR start time and the CBR flow size.
+
+Run all of the TCP varient at 1Mb flow size. 
+Start with CBR at 5 seconds before the TCP, with 1Mb/5Mb/10Mb flow.
+Then start with CBR at 5 seconds after the TCP, with 1Mb/5Mb/10Mb flow.
+
+I would measure the goodput of the TCP streams (total byte received/time) for average throughput.
+For latency, I would plot out the graph to answer.
+Measure both total bytes sent and total byte received for fewest drops.
+I would look at the produced graph, see whether there are outliers/how each perform under different situations to conclude for the "best varient"question.
+For all of those I would plot them out as graphs, with x axis as the size of CBR flow, y axis as average throuput/latency/byte drops, and mention significant values for t-test if there was an interesting one worth bringing up.
+
+
+Experiment 2
+In this experiment, the things I vary are TCP start time (between the TCPs) and CBR bandwidth.
+
+1. Start the CBR at 1Mb flow.
+   Start both TCP varients 1 second later, at the same time/one at 5 seconds earlier, then 5 seconds later.
+
+2. Start the CBR at 5Mb flow. Start TCP variants in the same way as in 1.
+
+3. Start the CBR at 10Mb flow. Start TCP variants in the same way as in 1.
+
+Same kinds of graphs as experiment 1.
+
+I would answer whether the TCPs are fair to each other by looking at the graphs, whether they have similar throughput, package loss, and latency. 
+
+
+Experiment 3
+For experiment 3, the only thing I would vary at the moment is the start time of the flows (I have not decided whether to vary the queue size or not).
+
+I would first run the TCP flow and observe at what time might it become relatively steady.
+Then, depending on the observation, I may start the CBR flow at 5Mb at 1 second, 5 second, 10 seconds after the TCP flow, for each varient of the queuing algorithm, and run each experiment for 5 seconds.
+
+For the graph, I plot both the result of the TCP flow and the result of the CBR flow, with the different start time as the x axis.
+
+I would again answer the questions by observing the graphs and the t test results.
