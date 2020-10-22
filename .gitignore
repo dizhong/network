@@ -1,3 +1,6 @@
 *.tr
 *.nam
 *.png
+*.swp
+*.pyc
+

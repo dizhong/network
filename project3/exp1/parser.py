@@ -5,6 +5,7 @@
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import math
+import sys
 #import numpy as np
 #from pylab import cm
 
@@ -46,8 +47,8 @@ class Parser:
         #print(len(dropped))
         #print("above dropped")
         #print(q_seconds)
-        print(r_seconds)
-        print(counter)
+        #print(r_seconds)
+        #print(counter)
         return q_seconds, r_seconds, dropped
 
 
@@ -92,7 +93,15 @@ class Parser:
 
 # main feeds files into parser, and produce graphs
 def main():
-    file1 = open('exp1_173.tr', 'r')
+    tcpV = sys.argv[1]
+    sec = sys.argv[2]
+    mbps = sys.argv[3]
+    fileNum = sys.argv[4]
+    fileName = "trace_files/exp1_" + fileNum + ".tr"
+    outputFile = sys.argv[5]
+    #else:
+    #    print("currently need file num")
+    file1 = open(fileName, 'r')
     lines = file1.readlines()
     myparser = Parser(lines)
     myparser.run()
@@ -100,13 +109,23 @@ def main():
     ys = [x[1] for x in myparser.traffic_list]
     ys_mbps = [ (x / 125000.0) for x in ys]
     plt.plot(xs, ys_mbps)
-    plt.savefig("exp1_173.png")
-    print(myparser.traffic_list)
-    print(ys_mbps)
-    print(myparser.tcp_drops)
-    print(myparser.tcp_goodput_bytes)
-    print(myparser.tcp_goodput_Mbps)
-    print(myparser.tcp_latency)
+    plt.savefig("pngs/exp1_" + fileNum + ".png")
+    file1.close()
+    output = open(fileName, "a")
+    #print(fileName)
+    output.write("tcpV: " + tcpV + "; sec:" \
+                 " " + sec + "; mbps: " + mbps + "; counter: " + fileNum + "\n" \
+                 "tcp_drops " + str(myparser.tcp_drops) + "; " \
+                 "tcp_goodput_bytes " + str(myparser.tcp_goodput_bytes) + "; " \
+                 "tcp_goodput_Mbps " + str(myparser.tcp_goodput_Mbps) + "; " \
+                 "tcp_latency " + str(myparser.tcp_latency) + "\n")
+    output.close()
+    #print(myparser.traffic_list)
+    #print(ys_mbps)
+    #print(myparser.tcp_drops)
+    #print(myparser.tcp_goodput_bytes)
+    #print(myparser.tcp_goodput_Mbps)
+    #print(myparser.tcp_latency)
 
 
 

@@ -15,13 +15,13 @@ if {$argc != 4} {
     set tcpVersion [lindex $argv 0]
     # range from 1~10 Mgbs
     set CBRsize [lindex $argv 1]mbps
-    puts $CBRsize
+    #puts $CBRsize
     # either 5 seconds before or after or at the same as TCP; TCP at 5.0 const
     set CBRstart [lindex $argv 2]
-    puts $CBRstart
+    #puts $CBRstart
     # number of output file, exp1_num.tr
     set outputNum [lindex $argv 3]
-    puts $outputNum
+    #puts $outputNum
 }
 
 
@@ -30,7 +30,7 @@ set ns [new Simulator]
 
 #set namfile [open exp1.nam w]
 #$ns namtrace-all $namfile
-set outputName "exp1_$outputNum.tr"
+set outputName "trace_files/exp1_$outputNum.tr"
 set tracefile [open $outputName w]
 $ns trace-all $tracefile
 
