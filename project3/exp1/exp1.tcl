@@ -15,10 +15,13 @@ if {$argc != 4} {
     set tcpVersion [lindex $argv 0]
     # range from 1~10 Mgbs
     set CBRsize [lindex $argv 1]mbps
+    puts $CBRsize
     # either 5 seconds before or after or at the same as TCP; TCP at 5.0 const
     set CBRstart [lindex $argv 2]
+    puts $CBRstart
     # number of output file, exp1_num.tr
     set outputNum [lindex $argv 3]
+    puts $outputNum
 }
 
 
@@ -80,7 +83,7 @@ if {$tcpVersion == 0} {
 } elseif {$tcpVersion == 3} {
     set tcp [new Agent/TCP/Vegas]
 } else {
-    put "tcp version number unhandled"
+    puts "tcp version number unhandled $tcpVersion"
 }
 $tcp set class_ 0 
 #what is this set class thing?
@@ -119,10 +122,10 @@ $ns at 125.0 "$ftp stop"
 $ns at 125.0 "$cbr stop"
 
 #detach tcp and sink agents
-$ns at 122.0 "$ns detach-agent $n1 $tcp ; $ns detach-agent $n4 $sink"
+$ns at 125.0 "$ns detach-agent $n1 $tcp ; $ns detach-agent $n4 $sink"
 
 #call the finish procedure
-$ns at 122.0 "finish"
+$ns at 125.0 "finish"
 
 #print CBR packet size and interval (do i need this?)
 puts "CBR packet size = [$cbr set packet_size_]"

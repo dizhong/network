@@ -25,16 +25,15 @@ class Parser:
             print("trace file empty \n")
             return
         # only keep timestamp and packet# and received packet size
-        queued = 0
-        received = 0
         q_seconds = {}
         r_seconds = {}
         dropped = []
+        counter = 0
+        print(self.trace[-1])
         for line in self.trace:
+            counter += 1
             split = line.split(" ")
             key = int(split[10])
-            #if float(split[1]) >= 302:
-            #    break;
             #store parameters of the traces of packets that were queued to send
             if split[4] == "tcp" and split[0] == "+" and split[2] == "0":
                 q_seconds[key] = (float(split[1]), int(split[5]))
@@ -47,7 +46,8 @@ class Parser:
         #print(len(dropped))
         #print("above dropped")
         #print(q_seconds)
-        #print(r_seconds)
+        print(r_seconds)
+        print(counter)
         return q_seconds, r_seconds, dropped
 
 
@@ -58,11 +58,13 @@ class Parser:
         traffic_list_temp = {0:0}
         tcp_goodput = 0
         second = 0
+        #print(q_seconds)
         for key in r_seconds:
             #try:
             thru_bytes = q_seconds[key][1]
             tcp_goodput += thru_bytes
             second = int(math.floor(q_seconds[key][0]))
+            #print(second)
             if second in traffic_list_temp:
                 traffic_list_temp[second] += thru_bytes
             else:
@@ -74,12 +76,13 @@ class Parser:
         self.tcp_goodput_bytes = tcp_goodput
         self.tcp_goodput_Mbps = self.tcp_goodput_bytes / (125000.0 * second-1.0)
         self.tcp_latency = sum(latency_list) / len(latency_list)
-        self.traffic_list = [(k, v) for k, v in traffic_list_temp.items()]
+        
+        self.traffic_list = [(k, v) for k, v in sorted(traffic_list_temp.items())]
         #self.traffic_list = self.traffic_list[:60]
-        print(len(r_seconds))
-        print("above size of acks")
-        print(len(q_seconds))
-        print("above size of packets")
+        #print(len(r_seconds))
+        #print("above size of acks")
+        #print(len(q_seconds))
+        #print("above size of packets")
 
     # function to run the other two
     def run(self):
@@ -89,7 +92,7 @@ class Parser:
 
 # main feeds files into parser, and produce graphs
 def main():
-    file1 = open('exp1_5.tr', 'r')
+    file1 = open('exp1_173.tr', 'r')
     lines = file1.readlines()
     myparser = Parser(lines)
     myparser.run()
@@ -97,7 +100,9 @@ def main():
     ys = [x[1] for x in myparser.traffic_list]
     ys_mbps = [ (x / 125000.0) for x in ys]
     plt.plot(xs, ys_mbps)
-    plt.savefig("exp1.png")
+    plt.savefig("exp1_173.png")
+    print(myparser.traffic_list)
+    print(ys_mbps)
     print(myparser.tcp_drops)
     print(myparser.tcp_goodput_bytes)
     print(myparser.tcp_goodput_Mbps)
