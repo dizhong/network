@@ -8,13 +8,27 @@
 #      /                                    \
 # node 5 (idle?)                          node 6 (idle?)
 
+if {$argc != 4} {
+    puts "need 4 arguments"
+} else {
+    # 0 = Tahoe, 1 = Reno, 2 = newReno, 3 = Vegas
+    set tcpVersion [lindex $argv 0]
+    # range from 1~10 Mgbs
+    set CBRsize [lindex $argv 1]mbps
+    # either 5 seconds before or after or at the same as TCP; TCP at 5.0 const
+    set CBRstart [lindex $argv 2]
+    # number of output file, exp1_num.tr
+    set outputNum [lindex $argv 3]
+}
+
 
 # create network nodes
 set ns [new Simulator]
 
 #set namfile [open exp1.nam w]
 #$ns namtrace-all $namfile
-set tracefile [open exp1.tr w]
+set outputName "exp1_$outputNum.tr"
+set tracefile [open $outputName w]
 $ns trace-all $tracefile
 
 proc finish {} {
@@ -57,7 +71,17 @@ $ns queue-limit $n2 $n3 25
 $ns queue-limit $n3 $n4 25
 
 #setup a TCP Reno connection
-set tcp [new Agent/TCP/Newreno]
+if {$tcpVersion == 0} {
+    set tcp [new Agent/TCP]
+} elseif {$tcpVersion == 1} {
+    set tcp [new Agent/TCP/Reno]
+} elseif {$tcpVersion == 2} {
+    set tcp [new Agent/TCP/Newreno]
+} elseif {$tcpVersion == 3} {
+    set tcp [new Agent/TCP/Vegas]
+} else {
+    put "tcp version number unhandled"
+}
 $tcp set class_ 0 
 #what is this set class thing?
 $tcp set window_ 1000
@@ -85,20 +109,20 @@ set cbr [new Application/Traffic/CBR]
 $cbr attach-agent $udp
 $cbr set type_ CBR
 $cbr set packet_size_ 1000
-$cbr set rate_ 1mb
+$cbr set rate_ $CBRsize
 $cbr set random_ false
 
 #schedule events for the CBR and FTP agents
-$ns at 1.0 "$ftp start"
-$ns at 1.0 "$cbr start"
-$ns at 62.0 "$ftp stop"
-$ns at 62.0 "$cbr stop"
+$ns at 5.0 "$ftp start"
+$ns at $CBRstart "$cbr start"
+$ns at 125.0 "$ftp stop"
+$ns at 125.0 "$cbr stop"
 
 #detach tcp and sink agents
-$ns at 62.0 "$ns detach-agent $n1 $tcp ; $ns detach-agent $n4 $sink"
+$ns at 122.0 "$ns detach-agent $n1 $tcp ; $ns detach-agent $n4 $sink"
 
 #call the finish procedure
-$ns at 62.0 "finish"
+$ns at 122.0 "finish"
 
 #print CBR packet size and interval (do i need this?)
 puts "CBR packet size = [$cbr set packet_size_]"
