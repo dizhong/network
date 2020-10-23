@@ -14,10 +14,10 @@ if {$argc != 4} {
     # 0 = Tahoe, 1 = Reno, 2 = newReno, 3 = Vegas
     set tcpVersion [lindex $argv 0]
     # range from 1~10 Mgbs
-    set CBRsize [lindex $argv 1]mbps
+    set CBRstart [lindex $argv 1]
     #puts $CBRsize
     # either 5 seconds before or after or at the same as TCP; TCP at 5.0 const
-    set CBRstart [lindex $argv 2]
+    set CBRsize [lindex $argv 2]mbps
     #puts $CBRstart
     # number of output file, exp1_num.tr
     set outputNum [lindex $argv 3]
