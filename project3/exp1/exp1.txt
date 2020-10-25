@@ -1,2 +1,160 @@
-tcpV: 0; sec: 1; mbps: 2; counter: 1
-tcp_drops 3025; tcp_goodput_bytes 89366200; tcp_goodput_Mbps 5.76556166229; tcp_latency 0.068725170348
+tcpV: 0; sec:1; mbps: 2; counter: 1
+tcp_drops: 3025; tcp_drop_rate: 3.40059580687%; tcp_goodput_bytes: 89366200; tcp_goodput_Mbps: 5.76556166229; tcp_latency: 0.068725170348
+tcpV: 0; sec:2; mbps: 2; counter: 2
+tcp_drops: 3025; tcp_drop_rate: 3.40059580687%; tcp_goodput_bytes: 89366200; tcp_goodput_Mbps: 5.76556166229; tcp_latency: 0.068725170348
+tcpV: 0; sec:3; mbps: 2; counter: 3
+tcp_drops: 3025; tcp_drop_rate: 3.40059580687%; tcp_goodput_bytes: 89366200; tcp_goodput_Mbps: 5.76556166229; tcp_latency: 0.068725170348
+tcpV: 0; sec:4; mbps: 2; counter: 4
+tcp_drops: 3025; tcp_drop_rate: 3.40059580687%; tcp_goodput_bytes: 89366200; tcp_goodput_Mbps: 5.76556166229; tcp_latency: 0.068725170348
+tcpV: 0; sec:1; mbps: 4; counter: 5
+tcp_drops: 3256; tcp_drop_rate: 4.5937442684%; tcp_goodput_bytes: 70326920; tcp_goodput_Mbps: 4.53722093789; tcp_latency: 0.0691295820653
+tcpV: 0; sec:2; mbps: 4; counter: 6
+tcp_drops: 3256; tcp_drop_rate: 4.5937442684%; tcp_goodput_bytes: 70326920; tcp_goodput_Mbps: 4.53722093789; tcp_latency: 0.0691295820653
+tcpV: 0; sec:3; mbps: 4; counter: 7
+tcp_drops: 3256; tcp_drop_rate: 4.5937442684%; tcp_goodput_bytes: 70326920; tcp_goodput_Mbps: 4.53722093789; tcp_latency: 0.0691295820653
+tcpV: 0; sec:4; mbps: 4; counter: 8
+tcp_drops: 3256; tcp_drop_rate: 4.5937442684%; tcp_goodput_bytes: 70326920; tcp_goodput_Mbps: 4.53722093789; tcp_latency: 0.0691295820653
+tcpV: 0; sec:1; mbps: 6; counter: 9
+tcp_drops: 3052; tcp_drop_rate: 6.3556851312%; tcp_goodput_bytes: 46765720; tcp_goodput_Mbps: 3.01714342046; tcp_latency: 0.069598991683
+tcpV: 0; sec:2; mbps: 6; counter: 10
+tcp_drops: 3052; tcp_drop_rate: 6.3556851312%; tcp_goodput_bytes: 46765720; tcp_goodput_Mbps: 3.01714342046; tcp_latency: 0.069598991683
+tcpV: 0; sec:3; mbps: 6; counter: 11
+tcp_drops: 3052; tcp_drop_rate: 6.3556851312%; tcp_goodput_bytes: 46765720; tcp_goodput_Mbps: 3.01714342046; tcp_latency: 0.069598991683
+tcpV: 0; sec:4; mbps: 6; counter: 12
+tcp_drops: 3052; tcp_drop_rate: 6.3556851312%; tcp_goodput_bytes: 46765720; tcp_goodput_Mbps: 3.01714342046; tcp_latency: 0.069598991683
+tcpV: 0; sec:1; mbps: 8; counter: 13
+tcp_drops: 2637; tcp_drop_rate: 10.2630964427%; tcp_goodput_bytes: 23978280; tcp_goodput_Mbps: 1.54698590626; tcp_latency: 0.071178413497
+tcpV: 0; sec:2; mbps: 8; counter: 14
+tcp_drops: 2637; tcp_drop_rate: 10.2630964427%; tcp_goodput_bytes: 23978280; tcp_goodput_Mbps: 1.54698590626; tcp_latency: 0.071178413497
+tcpV: 0; sec:3; mbps: 8; counter: 15
+tcp_drops: 2637; tcp_drop_rate: 10.2630964427%; tcp_goodput_bytes: 23978280; tcp_goodput_Mbps: 1.54698590626; tcp_latency: 0.071178413497
+tcpV: 0; sec:4; mbps: 8; counter: 16
+tcp_drops: 2637; tcp_drop_rate: 10.2630964427%; tcp_goodput_bytes: 23978280; tcp_goodput_Mbps: 1.54698590626; tcp_latency: 0.071178413497
+tcpV: 0; sec:1; mbps: 10; counter: 17
+tcp_drops: 40; tcp_drop_rate: 59.7014925373%; tcp_goodput_bytes: 27080; tcp_goodput_Mbps: 0.0433280693249; tcp_latency: 0.0732592592593
+tcpV: 0; sec:2; mbps: 10; counter: 18
+tcp_drops: 40; tcp_drop_rate: 59.7014925373%; tcp_goodput_bytes: 27080; tcp_goodput_Mbps: 0.0433280693249; tcp_latency: 0.0732592592593
+tcpV: 0; sec:3; mbps: 10; counter: 19
+tcp_drops: 40; tcp_drop_rate: 59.7014925373%; tcp_goodput_bytes: 27080; tcp_goodput_Mbps: 0.0433280693249; tcp_latency: 0.0732592592593
+tcpV: 0; sec:4; mbps: 10; counter: 20
+tcp_drops: 40; tcp_drop_rate: 59.7014925373%; tcp_goodput_bytes: 27080; tcp_goodput_Mbps: 0.0433280693249; tcp_latency: 0.0732592592593
+tcpV: 1; sec:1; mbps: 2; counter: 21
+tcp_drops: 3300; tcp_drop_rate: 4.14598906967%; tcp_goodput_bytes: 79345800; tcp_goodput_Mbps: 5.11908420123; tcp_latency: 0.0675781976801
+tcpV: 1; sec:2; mbps: 2; counter: 22
+tcp_drops: 3300; tcp_drop_rate: 4.14598906967%; tcp_goodput_bytes: 79345800; tcp_goodput_Mbps: 5.11908420123; tcp_latency: 0.0675781976801
+tcpV: 1; sec:3; mbps: 2; counter: 23
+tcp_drops: 3300; tcp_drop_rate: 4.14598906967%; tcp_goodput_bytes: 79345800; tcp_goodput_Mbps: 5.11908420123; tcp_latency: 0.0675781976801
+tcpV: 1; sec:4; mbps: 2; counter: 24
+tcp_drops: 3300; tcp_drop_rate: 4.14598906967%; tcp_goodput_bytes: 79345800; tcp_goodput_Mbps: 5.11908420123; tcp_latency: 0.0675781976801
+tcpV: 1; sec:1; mbps: 4; counter: 25
+tcp_drops: 3203; tcp_drop_rate: 5.32050962609%; tcp_goodput_bytes: 59276920; tcp_goodput_Mbps: 3.82431766609; tcp_latency: 0.0683855658093
+tcpV: 1; sec:2; mbps: 4; counter: 26
+tcp_drops: 3203; tcp_drop_rate: 5.32050962609%; tcp_goodput_bytes: 59276920; tcp_goodput_Mbps: 3.82431766609; tcp_latency: 0.0683855658093
+tcpV: 1; sec:3; mbps: 4; counter: 27
+tcp_drops: 3203; tcp_drop_rate: 5.32050962609%; tcp_goodput_bytes: 59276920; tcp_goodput_Mbps: 3.82431766609; tcp_latency: 0.0683855658093
+tcpV: 1; sec:4; mbps: 4; counter: 28
+tcp_drops: 3203; tcp_drop_rate: 5.32050962609%; tcp_goodput_bytes: 59276920; tcp_goodput_Mbps: 3.82431766609; tcp_latency: 0.0683855658093
+tcpV: 1; sec:1; mbps: 6; counter: 29
+tcp_drops: 3084; tcp_drop_rate: 6.99557672678%; tcp_goodput_bytes: 42640040; tcp_goodput_Mbps: 2.75097050006; tcp_latency: 0.0691697755177
+tcpV: 1; sec:2; mbps: 6; counter: 30
+tcp_drops: 3084; tcp_drop_rate: 6.99557672678%; tcp_goodput_bytes: 42640040; tcp_goodput_Mbps: 2.75097050006; tcp_latency: 0.0691697755177
+tcpV: 1; sec:3; mbps: 6; counter: 31
+tcp_drops: 3084; tcp_drop_rate: 6.99557672678%; tcp_goodput_bytes: 42640040; tcp_goodput_Mbps: 2.75097050006; tcp_latency: 0.0691697755177
+tcpV: 1; sec:4; mbps: 6; counter: 32
+tcp_drops: 3084; tcp_drop_rate: 6.99557672678%; tcp_goodput_bytes: 42640040; tcp_goodput_Mbps: 2.75097050006; tcp_latency: 0.0691697755177
+tcpV: 1; sec:1; mbps: 8; counter: 33
+tcp_drops: 2828; tcp_drop_rate: 11.294380766%; tcp_goodput_bytes: 23098440; tcp_goodput_Mbps: 1.49022203163; tcp_latency: 0.0714693865202
+tcpV: 1; sec:2; mbps: 8; counter: 34
+tcp_drops: 2828; tcp_drop_rate: 11.294380766%; tcp_goodput_bytes: 23098440; tcp_goodput_Mbps: 1.49022203163; tcp_latency: 0.0714693865202
+tcpV: 1; sec:3; mbps: 8; counter: 35
+tcp_drops: 2828; tcp_drop_rate: 11.294380766%; tcp_goodput_bytes: 23098440; tcp_goodput_Mbps: 1.49022203163; tcp_latency: 0.0714693865202
+tcpV: 1; sec:4; mbps: 8; counter: 36
+tcp_drops: 2828; tcp_drop_rate: 11.294380766%; tcp_goodput_bytes: 23098440; tcp_goodput_Mbps: 1.49022203163; tcp_latency: 0.0714693865202
+tcpV: 1; sec:1; mbps: 10; counter: 37
+tcp_drops: 72; tcp_drop_rate: 59.0163934426%; tcp_goodput_bytes: 51000; tcp_goodput_Mbps: 0.0680000906668; tcp_latency: 0.20096992
+tcpV: 1; sec:2; mbps: 10; counter: 38
+tcp_drops: 72; tcp_drop_rate: 59.0163934426%; tcp_goodput_bytes: 51000; tcp_goodput_Mbps: 0.0680000906668; tcp_latency: 0.20096992
+tcpV: 1; sec:3; mbps: 10; counter: 39
+tcp_drops: 72; tcp_drop_rate: 59.0163934426%; tcp_goodput_bytes: 51000; tcp_goodput_Mbps: 0.0680000906668; tcp_latency: 0.20096992
+tcpV: 1; sec:4; mbps: 10; counter: 40
+tcp_drops: 72; tcp_drop_rate: 59.0163934426%; tcp_goodput_bytes: 51000; tcp_goodput_Mbps: 0.0680000906668; tcp_latency: 0.20096992
+tcpV: 2; sec:1; mbps: 2; counter: 41
+tcp_drops: 5677; tcp_drop_rate: 5.9075725569%; tcp_goodput_bytes: 94035800; tcp_goodput_Mbps: 6.06682619786; tcp_latency: 0.0685527021456
+tcpV: 2; sec:2; mbps: 2; counter: 42
+tcp_drops: 5677; tcp_drop_rate: 5.9075725569%; tcp_goodput_bytes: 94035800; tcp_goodput_Mbps: 6.06682619786; tcp_latency: 0.0685527021456
+tcpV: 2; sec:3; mbps: 2; counter: 43
+tcp_drops: 5677; tcp_drop_rate: 5.9075725569%; tcp_goodput_bytes: 94035800; tcp_goodput_Mbps: 6.06682619786; tcp_latency: 0.0685527021456
+tcpV: 2; sec:4; mbps: 2; counter: 44
+tcp_drops: 5677; tcp_drop_rate: 5.9075725569%; tcp_goodput_bytes: 94035800; tcp_goodput_Mbps: 6.06682619786; tcp_latency: 0.0685527021456
+tcpV: 2; sec:1; mbps: 4; counter: 45
+tcp_drops: 5036; tcp_drop_rate: 6.45839745563%; tcp_goodput_bytes: 75856600; tcp_goodput_Mbps: 4.89397450929; tcp_latency: 0.0689018066356
+tcpV: 2; sec:2; mbps: 4; counter: 46
+tcp_drops: 5036; tcp_drop_rate: 6.45839745563%; tcp_goodput_bytes: 75856600; tcp_goodput_Mbps: 4.89397450929; tcp_latency: 0.0689018066356
+tcpV: 2; sec:3; mbps: 4; counter: 47
+tcp_drops: 5036; tcp_drop_rate: 6.45839745563%; tcp_goodput_bytes: 75856600; tcp_goodput_Mbps: 4.89397450929; tcp_latency: 0.0689018066356
+tcpV: 2; sec:4; mbps: 4; counter: 48
+tcp_drops: 5036; tcp_drop_rate: 6.45839745563%; tcp_goodput_bytes: 75856600; tcp_goodput_Mbps: 4.89397450929; tcp_latency: 0.0689018066356
+tcpV: 2; sec:1; mbps: 6; counter: 49
+tcp_drops: 4386; tcp_drop_rate: 8.16698942351%; tcp_goodput_bytes: 51289720; tcp_goodput_Mbps: 3.30901440703; tcp_latency: 0.0693421937832
+tcpV: 2; sec:2; mbps: 6; counter: 50
+tcp_drops: 4386; tcp_drop_rate: 8.16698942351%; tcp_goodput_bytes: 51289720; tcp_goodput_Mbps: 3.30901440703; tcp_latency: 0.0693421937832
+tcpV: 2; sec:3; mbps: 6; counter: 51
+tcp_drops: 4386; tcp_drop_rate: 8.16698942351%; tcp_goodput_bytes: 51289720; tcp_goodput_Mbps: 3.30901440703; tcp_latency: 0.0693421937832
+tcpV: 2; sec:4; mbps: 6; counter: 52
+tcp_drops: 4386; tcp_drop_rate: 8.16698942351%; tcp_goodput_bytes: 51289720; tcp_goodput_Mbps: 3.30901440703; tcp_latency: 0.0693421937832
+tcpV: 2; sec:1; mbps: 8; counter: 53
+tcp_drops: 4171; tcp_drop_rate: 14.4485243176%; tcp_goodput_bytes: 25683880; tcp_goodput_Mbps: 1.65702462303; tcp_latency: 0.070756739685
+tcpV: 2; sec:2; mbps: 8; counter: 54
+tcp_drops: 4171; tcp_drop_rate: 14.4485243176%; tcp_goodput_bytes: 25683880; tcp_goodput_Mbps: 1.65702462303; tcp_latency: 0.070756739685
+tcpV: 2; sec:3; mbps: 8; counter: 55
+tcp_drops: 4171; tcp_drop_rate: 14.4485243176%; tcp_goodput_bytes: 25683880; tcp_goodput_Mbps: 1.65702462303; tcp_latency: 0.070756739685
+tcpV: 2; sec:4; mbps: 8; counter: 56
+tcp_drops: 4171; tcp_drop_rate: 14.4485243176%; tcp_goodput_bytes: 25683880; tcp_goodput_Mbps: 1.65702462303; tcp_latency: 0.070756739685
+tcpV: 2; sec:1; mbps: 10; counter: 57
+tcp_drops: 76; tcp_drop_rate: 59.375%; tcp_goodput_bytes: 53080; tcp_goodput_Mbps: 0.0707734276979; tcp_latency: 0.192552923077
+tcpV: 2; sec:2; mbps: 10; counter: 58
+tcp_drops: 76; tcp_drop_rate: 59.375%; tcp_goodput_bytes: 53080; tcp_goodput_Mbps: 0.0707734276979; tcp_latency: 0.192552923077
+tcpV: 2; sec:3; mbps: 10; counter: 59
+tcp_drops: 76; tcp_drop_rate: 59.375%; tcp_goodput_bytes: 53080; tcp_goodput_Mbps: 0.0707734276979; tcp_latency: 0.192552923077
+tcpV: 2; sec:4; mbps: 10; counter: 60
+tcp_drops: 76; tcp_drop_rate: 59.375%; tcp_goodput_bytes: 53080; tcp_goodput_Mbps: 0.0707734276979; tcp_latency: 0.192552923077
+tcpV: 3; sec:1; mbps: 2; counter: 61
+tcp_drops: 60; tcp_drop_rate: 0.0533888577454%; tcp_goodput_bytes: 112323000; tcp_goodput_Mbps: 7.24664562882; tcp_latency: 0.0630696898053
+tcpV: 3; sec:2; mbps: 2; counter: 62
+tcp_drops: 60; tcp_drop_rate: 0.0533888577454%; tcp_goodput_bytes: 112323000; tcp_goodput_Mbps: 7.24664562882; tcp_latency: 0.0630696898053
+tcpV: 3; sec:3; mbps: 2; counter: 63
+tcp_drops: 60; tcp_drop_rate: 0.0533888577454%; tcp_goodput_bytes: 112323000; tcp_goodput_Mbps: 7.24664562882; tcp_latency: 0.0630696898053
+tcpV: 3; sec:4; mbps: 2; counter: 64
+tcp_drops: 60; tcp_drop_rate: 0.0533888577454%; tcp_goodput_bytes: 112323000; tcp_goodput_Mbps: 7.24664562882; tcp_latency: 0.0630696898053
+tcpV: 3; sec:1; mbps: 4; counter: 65
+tcp_drops: 48; tcp_drop_rate: 0.053924707627%; tcp_goodput_bytes: 88965000; tcp_goodput_Mbps: 5.73967778966; tcp_latency: 0.0639887421796
+tcpV: 3; sec:2; mbps: 4; counter: 66
+tcp_drops: 48; tcp_drop_rate: 0.053924707627%; tcp_goodput_bytes: 88965000; tcp_goodput_Mbps: 5.73967778966; tcp_latency: 0.0639887421796
+tcpV: 3; sec:3; mbps: 4; counter: 67
+tcp_drops: 48; tcp_drop_rate: 0.053924707627%; tcp_goodput_bytes: 88965000; tcp_goodput_Mbps: 5.73967778966; tcp_latency: 0.0639887421796
+tcpV: 3; sec:4; mbps: 4; counter: 68
+tcp_drops: 48; tcp_drop_rate: 0.053924707627%; tcp_goodput_bytes: 88965000; tcp_goodput_Mbps: 5.73967778966; tcp_latency: 0.0639887421796
+tcpV: 3; sec:1; mbps: 6; counter: 69
+tcp_drops: 33; tcp_drop_rate: 0.0553088075086%; tcp_goodput_bytes: 59632000; tcp_goodput_Mbps: 3.84722605466; tcp_latency: 0.0659760168031
+tcpV: 3; sec:2; mbps: 6; counter: 70
+tcp_drops: 33; tcp_drop_rate: 0.0553088075086%; tcp_goodput_bytes: 59632000; tcp_goodput_Mbps: 3.84722605466; tcp_latency: 0.0659760168031
+tcpV: 3; sec:3; mbps: 6; counter: 71
+tcp_drops: 33; tcp_drop_rate: 0.0553088075086%; tcp_goodput_bytes: 59632000; tcp_goodput_Mbps: 3.84722605466; tcp_latency: 0.0659760168031
+tcpV: 3; sec:4; mbps: 6; counter: 72
+tcp_drops: 33; tcp_drop_rate: 0.0553088075086%; tcp_goodput_bytes: 59632000; tcp_goodput_Mbps: 3.84722605466; tcp_latency: 0.0659760168031
+tcpV: 3; sec:1; mbps: 8; counter: 73
+tcp_drops: 18; tcp_drop_rate: 0.0601383181317%; tcp_goodput_bytes: 29913000; tcp_goodput_Mbps: 1.92987109225; tcp_latency: 0.0720210843446
+tcpV: 3; sec:2; mbps: 8; counter: 74
+tcp_drops: 18; tcp_drop_rate: 0.0601383181317%; tcp_goodput_bytes: 29913000; tcp_goodput_Mbps: 1.92987109225; tcp_latency: 0.0720210843446
+tcpV: 3; sec:3; mbps: 8; counter: 75
+tcp_drops: 18; tcp_drop_rate: 0.0601383181317%; tcp_goodput_bytes: 29913000; tcp_goodput_Mbps: 1.92987109225; tcp_latency: 0.0720210843446
+tcpV: 3; sec:4; mbps: 8; counter: 76
+tcp_drops: 18; tcp_drop_rate: 0.0601383181317%; tcp_goodput_bytes: 29913000; tcp_goodput_Mbps: 1.92987109225; tcp_latency: 0.0720210843446
+tcpV: 3; sec:1; mbps: 10; counter: 77
+tcp_drops: 30; tcp_drop_rate: 55.5555555556%; tcp_goodput_bytes: 24000; tcp_goodput_Mbps: 0.0384000614401; tcp_latency: 0.072654
+tcpV: 3; sec:2; mbps: 10; counter: 78
+tcp_drops: 30; tcp_drop_rate: 55.5555555556%; tcp_goodput_bytes: 24000; tcp_goodput_Mbps: 0.0384000614401; tcp_latency: 0.072654
+tcpV: 3; sec:3; mbps: 10; counter: 79
+tcp_drops: 30; tcp_drop_rate: 55.5555555556%; tcp_goodput_bytes: 24000; tcp_goodput_Mbps: 0.0384000614401; tcp_latency: 0.072654
+tcpV: 3; sec:4; mbps: 10; counter: 80
+tcp_drops: 30; tcp_drop_rate: 55.5555555556%; tcp_goodput_bytes: 24000; tcp_goodput_Mbps: 0.0384000614401; tcp_latency: 0.072654

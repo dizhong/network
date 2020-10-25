@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 #import pandas as pd
 import math
 import sys
+import json
 #import numpy as np
 #from pylab import cm
 
@@ -18,7 +19,8 @@ class Parser:
         self.tcp_goodput_bytes = 0.0
         self.tcp_goodput_Mbps = 0.0
         self.tcp_latency = None
-        self.tcp_drops = None
+        self.tcp_drops = 0
+        self.tcp_sent = 0
         self.traffic_list = []
         self.traffic_raw = []
  
@@ -42,8 +44,10 @@ class Parser:
             if split[4] == "tcp" and split[0] == "+" and split[2] == "0":
                 if key in q_seconds:
                     q_seconds[key][2] += 1
+                    self.tcp_sent += 1
                 else:
                     q_seconds[key] = list((float(split[1]), int(split[5]), 1))
+                    self.tcp_sent += 1
             #store parameters of the traces of acks that were received
             elif split[4] == "ack" and split[0] == "r" and split[3] == "0":
                 if key not in r_seconds:
@@ -96,15 +100,13 @@ class Parser:
 
 # main feeds files into parser, and produce graphs
 def main():
-    tcpV = sys.argv[1]
-    sec = sys.argv[2]
-    mbps = sys.argv[3]
-    fileNum = sys.argv[4]
-    fileName = "trace_files/exp1_" + fileNum + ".tr"
+    tcpV = int(sys.argv[1])
+    sec = int(sys.argv[2])
+    mbps = int(sys.argv[3])
+    fileNum = int(sys.argv[4])
+    fileName = "trace_files/exp1_" + str(fileNum) + ".tr"
     outputFile = sys.argv[5]
-    outputTrace = "pngs/exp1_" + fileNum + ".txt"
-    #else:
-    #    print("currently need file num")
+    outputTrace = "pngs/exp1_" + str(fileNum) + ".txt"
     file1 = open(fileName, 'r')
     lines = file1.readlines()
     myparser = Parser(lines)
@@ -112,45 +114,30 @@ def main():
     xs = [x[0] for x in myparser.traffic_list]
     ys = [x[1] for x in myparser.traffic_list]
     ys_mbps = [ (x / 125000.0) for x in ys]
-    #graph = plt.subplot()
     plt.ylim(0, 11)
     plt.xlim(0, 130)
     plt.xlabel("Seconds")
     plt.ylabel("Mbps")
     plt.plot(xs, ys_mbps, '-ok')
     plt.grid(linestyle='-', linewidth='0.5', color='grey')
-    plt.savefig("pngs/exp1_" + fileNum + ".png")
+    plt.savefig("pngs/exp1_" + str(fileNum) + ".png")
     plt.clf()
-    #somehow get a rolling average list
-    #window_size = 5
-    #i = 0
-    #rolling_averages = []
-    #while i < len(ys_mbps) - window_size + 1:
-    #    this_window = ys_mbps[i : i + window_size]
-    #    window_average = sum(this_window) / window_size
-    #    rolling_averages.append(window_average)
-    #    i += 1
-    #ys_mbps = ys_mbps[0 : 4] + rolling_averages
-    #plt.ylim(0, 11)
-    #plt.xlim(0, 130)
-    #plt.xlabel("Seconds")
-    #plt.ylabel("Mbps")
-    #print(len(xs))
-    #print(len(ys_mbps))
-    #x, y = zip(*(myparser.traffic_raw))
-    #plt.scatter(x, y)
-    #plt.grid(linestyle='-', linewidth='0.5', color='grey')
-    #plt.savefig("pngs/exp1_" + fileNum + "_rolling.png")
+
     file1.close()
 
     print(fileName)
 
-    write_string = ("tcpV: " + tcpV + "; sec:" \
-                 " " + sec + "; mbps: " + mbps + "; counter: " + fileNum + "\n" \
-                 "tcp_drops " + str(myparser.tcp_drops) + "; " \
-                 "tcp_goodput_bytes " + str(myparser.tcp_goodput_bytes) + "; " \
-                 "tcp_goodput_Mbps " + str(myparser.tcp_goodput_Mbps) + "; " \
-                 "tcp_latency " + str(myparser.tcp_latency) + "\n")
+    pkt_drop_rate = (myparser.tcp_drops / float(myparser.tcp_sent)) * 100
+
+    write_string = ("tcpV: " + str(tcpV) + "; sec:" + str(sec) + "; mbps:" \
+                 " " + str(mbps) + "; counter: " + str(fileNum) + "\n" \
+                 "tcp_drops: " + str(myparser.tcp_drops) + "; " \
+                 "tcp_drop_rate: " + str(pkt_drop_rate) + "%; " \
+                 "tcp_goodput_bytes: " + str(myparser.tcp_goodput_bytes) + "; " \
+                 "tcp_goodput_Mbps: " + str(myparser.tcp_goodput_Mbps) + "; " \
+                 "tcp_latency: " + str(myparser.tcp_latency) + "\n")
+
+    print(write_string)
 
     output = open(outputFile, "a")
     output.write(write_string)
@@ -161,6 +148,22 @@ def main():
     output2.write(str(xs) + "\n")
     output2.write(str(ys_mbps))
     output2.close()
+
+    json_out = open('json.txt', "a")
+    data = {}
+    data = {"parameters": {"tcpVersion": tcpV, 
+                           "CBRStartSec": sec,
+                           "CBRFlowMbps":  mbps, 
+                           "SimulationCounter": fileNum},
+            "results": {"tcp_drops": myparser.tcp_drops,
+                        "tcp_drop_rate": pkt_drop_rate,
+                        "tcp_goodput_bytes": myparser.tcp_goodput_bytes,
+                        "tcp_goodput_Mbps": myparser.tcp_goodput_Mbps,
+                        "tcp_latency": myparser.tcp_latency}
+           }
+    json.dump(data, json_out, indent = 4)
+    json_out.write('\n')
+    json_out.close()  
 
 
 if __name__ == "__main__":

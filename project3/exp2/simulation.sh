@@ -1,9 +1,9 @@
 #!/bin/sh
 # counter for total script runs
 counter=0
-filename='exp1.txt'
+filename='exp2.txt'
 jsonname='json.txt'
-tracefirst='trace_files/exp1_'
+tracefirst='trace_files/exp2_'
 tracelast='.tr'
 if [ -f $filename ]; then
     rm $filename
@@ -17,7 +17,7 @@ if [ -f $jsonname ]; then
 else
     touch $jsonname
 fi
-# 0 = tahoe, 1 = reno, 2 = newreno, 3 = vegas
+# 0 = reno/reno, 1 = newreno/reno, 2 = vegas/vegas, 3 = newreno/vegas
 for tcpV in 0 1 2 3 
 do
     # mbps in 2 4 6 8 10; iteration # * 2

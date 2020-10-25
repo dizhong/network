@@ -1,0 +1,31 @@
+
+# use this to process the json file from parser and produce final graphs
+
+import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib as plt
+import math
+import sys
+import json
+
+#give a json file name and read in the data
+def get_data(fileName):
+#read in json file and produce needed data structures?
+    jsonFile = open(fileName)
+    thefile = jsonFile.read()
+    decoder = json.JSONDecoder()
+    while (len(thefile) > 5):
+        jsonData, s = decoder.raw_decode(thefile)
+        thefile = thefile[s:]
+        print(thefile)
+#need 3 graphs: average throughput, average drop, average latency
+#for each group
+
+
+def main():
+    fileName = "json.txt"
+    get_data(fileName)
+
+
+if __name__ == "__main__":
+    main()
