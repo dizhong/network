@@ -121,9 +121,9 @@ def main():
     sec = int(sys.argv[2])
     mbps = int(sys.argv[3])
     fileNum = int(sys.argv[4])
-    fileName = "trace_files/exp1_" + str(fileNum) + ".tr"
+    fileName = "trace_files/exp2_" + str(fileNum) + ".tr"
     outputFile = "exp2.txt"
-    outputTrace = "pngs/exp1_" + str(fileNum) + ".txt"
+    outputTrace = "pngs/exp2_" + str(fileNum) + ".txt"
     file1 = open(fileName, 'r')
     lines = file1.readlines()
     q1_sec, r1_sec, q2_sec, r2_sec, tcp1_sent, tcp2_sent = parse(lines)

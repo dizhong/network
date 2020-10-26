@@ -25,13 +25,15 @@ do
     do
         for sec in 1 2 3 4
         do
-            counter=$(expr $counter + 1)
-            ns exp1.tcl $tcpV $mbps $sec $counter
-            #echo "t $counter}" >> $filename 
-            python parser.py $tcpV $sec $mbps $counter $filename
-            tracename="$tracefirst$counter$tracelast"
-            rm $tracename                 
-                
+            for tcpStart in 0 1
+            do
+                counter=$(expr $counter + 1)
+                ns exp2.tcl $tcpV $mbps $sec $tcpStart $counter
+                #echo "t $counter}" >> $filename 
+                python parser.py $tcpV $sec $mbps $counter $filename
+                tracename="$tracefirst$counter$tracelast"
+                rm $tracename                 
+            done
         done
     done
 done

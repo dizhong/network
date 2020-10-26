@@ -8,8 +8,8 @@
 #      /           tcp flow 5 -> 6          \
 # node 5 (tcp)                          node 6 (tcp)
 
-if {$argc != 4} {
-    puts "need 4 arguments"
+if {$argc != 5} {
+    puts "need 5 arguments"
 } else {
     # 0 = Reno/Reno, 1 = NewReno/Reno, 2 = Vegas/Vegas, 3 = NewReno/Vegas
     set tcpVersion [lindex $argv 0]
@@ -18,8 +18,10 @@ if {$argc != 4} {
     #puts $CBRsize
     set CBRsize [lindex $argv 1]mbps
     #puts $CBRstart
+    # 0 is tcp1 first, 1 is tcp2 first
+    set TCPorder [lindex $argv 3]
     # number of output file, exp1_num.tr
-    set outputNum [lindex $argv 3]
+    set outputNum [lindex $argv 4]
     #puts $outputNum
     #set seed [lindex $argv 4]
 }
@@ -32,7 +34,7 @@ set ns [new Simulator]
 
 #set namfile [open exp1.nam w]
 #$ns namtrace-all $namfile
-set outputName "trace_files/exp1_$outputNum.tr"
+set outputName "trace_files/exp2_$outputNum.tr"
 set tracefile [open $outputName w]
 $ns trace-all $tracefile
 
@@ -133,8 +135,13 @@ $cbr set rate_ $CBRsize
 $cbr set random_ false
 
 #schedule events for the CBR and FTP agents
-$ns at 5.0 "$ftp1 start"
-$ns at 5.0 "$ftp2 start"
+if {$TCPorder == 0} {
+    $ns at 5.0 "$ftp1 start"
+    $ns at 5.0 "$ftp2 start"
+} elseif {$TCPorder == 1} {
+    $ns at 5.0 "$ftp2 start"
+    $ns at 5.0 "$ftp1 start"
+}
 $ns at $CBRstart "$cbr start"
 $ns at 125.0 "$ftp1 stop"
 $ns at 125.0 "$ftp2 stop"
