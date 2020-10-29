@@ -21,9 +21,9 @@ fi
 for tcpV in 0 1 2 3 
 do
     # mbps in 2 4 6 8 10; iteration # * 2
-    for mbps in 2 4 6 8 10
+    for mbps in 1 2 3 4 5 6 7 8 9 10
     do
-        for sec in 1 2 3 4
+        for sec in 1 2 3 4 5
         do
             for tcpStart in 0 1
             do

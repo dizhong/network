@@ -5,6 +5,7 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import stats
 import math
 import sys
 import json
@@ -87,18 +88,32 @@ def plot_graph(rdt, rred, sdt, sred):
             #if (png_kind == 2) and (pair_num == 0):
             #    print(current_pair)
             plt.xlim(10, 40)
-            plt.plot(x_axis, current_pair[0], '-ok', label=pair_names[pair_num][0], color='k')
-            plt.plot(x_axis, current_pair[1], '-ok', label=pair_names[pair_num][1], color='y')
+            plt.plot(x_axis, current_pair[0], '-ok', linestyle='-', label=pair_names[pair_num][0], color='k')
+            plt.plot(x_axis, current_pair[1], '-ok', linestyle='-.', label=pair_names[pair_num][1], color='y')
             plt.legend(bbox_to_anchor= (0., 1.02, 1., .102), loc='lower left', ncol=2, mode="expand", borderaxespad=0)
             plt.savefig(png_kinds[png_kind] + pair_names[pair_num][0] + pair_names[pair_num][1] + ".png")
             plt.clf()
+
+    return y_axis, pair_names, png_kinds
 
 
 
 def main():
     fileName = "json.txt"
     R_DT_data, R_RED_data, S_DT_data, S_RED_data = get_data(fileName)
-    plot_graph(R_DT_data, R_RED_data, S_DT_data, S_RED_data)  
+    y_axis, pair_names, data_kinds = plot_graph(R_DT_data, R_RED_data, S_DT_data, S_RED_data)  
+    #calculate t-test
+    ttest = open("ttest.txt", "w")
+    for data_kind in range(0, 3):
+        current_y = y_axis[data_kind]
+        for pair_num in range(0, 4):
+            current_pair = current_y[pair_num]
+            t_value, p_value = stats.ttest_ind(current_pair[0], current_pair[1])
+            ttest.write(pair_names[pair_num][0] + pair_names[pair_num][1] + ":"\
+                        " " + data_kinds[data_kind] + "\nt_value:" \
+                        " " + str(t_value) + " p_value: " + str(p_value) + "\n")
+
+    ttest.close()
 
 
 

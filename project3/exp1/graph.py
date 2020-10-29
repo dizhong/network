@@ -98,12 +98,16 @@ def plot_graph(tahoe, reno, newreno, vegas):
     plt.savefig("latency.png")
     plt.clf()
 
-
+    throughput_list = [y_t_t, y_r_t, y_n_t, y_v_t]
+    droprate_list = [y_t_d, y_r_d, y_n_d, y_v_d]
+    latency_list = [y_t_l, y_r_l, y_n_l, y_v_l]
+    return throughput_list, droprate_list, latency_list
 
 def main():
     fileName = "json.txt"
     tahoe, reno, newreno, vegas = get_data(fileName)
-    plot_graph(tahoe, reno, newreno, vegas)  
+    throughput, droprate, latency = plot_graph(tahoe, reno, newreno, vegas)  
+    #calculate t-test for select pairs
 
 
 if __name__ == "__main__":

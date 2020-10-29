@@ -5,6 +5,7 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import stats
 import math
 import sys
 import json
@@ -22,7 +23,7 @@ def get_data(fileName):
     NV_data = []
     while (len(thefile) > 5):
         sublist = []
-        for i in range(1, 9):
+        for i in range(1, 11):
             jsonData, s = decoder.raw_decode(thefile)
             thefile = thefile[s:].lstrip()
             results = jsonData["results"]
@@ -90,12 +91,26 @@ def plot_graph(rr, nr, vv, nv):
             plt.savefig(png_kinds[png_kind] + pair_names[pair_num][0] + pair_names[pair_num][1] + ".png")
             plt.clf()
 
+    return y_axis, pair_names, png_kinds
 
 
 def main():
     fileName = "json.txt"
     tahoe, reno, newreno, vegas = get_data(fileName)
-    plot_graph(tahoe, reno, newreno, vegas)  
+    y_axis, pair_names, data_kinds = plot_graph(tahoe, reno, newreno, vegas)  
+    #calculate t-test
+    ttest = open("ttest.txt", "w")
+    for data_kind in range(0, 3):
+        current_y = y_axis[data_kind]
+        for pair_num in range(0, 4):
+            current_pair = current_y[pair_num]
+            t_value, p_value = stats.ttest_ind(current_pair[0], current_pair[1])
+            ttest.write(pair_names[pair_num][0] + pair_names[pair_num][1] + ":"\
+                        " " + data_kinds[data_kind] + "\nt_value:" \
+                        " " + str(t_value) + " p_value: " + str(p_value) + "\n")
+
+    ttest.close()
+
 
 
 

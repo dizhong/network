@@ -14,7 +14,7 @@ if {$argc != 5} {
     # 0 = Reno/Reno, 1 = NewReno/Reno, 2 = Vegas/Vegas, 3 = NewReno/Vegas
     set tcpVersion [lindex $argv 0]
     # range from 1~4 secs, tcp at 5
-    set CBRstart [lindex $argv 2]
+    set CBRstart {1 + [lindex $argv 2] * 0.001}
     #puts $CBRsize
     set CBRsize [lindex $argv 1]mbps
     #puts $CBRstart
