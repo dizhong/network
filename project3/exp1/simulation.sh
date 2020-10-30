@@ -21,17 +21,19 @@ fi
 for tcpV in 0 1 2 3 
 do
     # mbps in 2 4 6 8 10; iteration # * 2
-    for mbps in 2 4 6 8 10
+    for mbps in 1 2 3 4 5 6 7 8 9 10
     do
-        for sec in 1 2 3 4
+        for tcpSec in 1 2 3 4
         do
+            #for cbrSec in 1 2 3 4
+            #do
             counter=$(expr $counter + 1)
-            ns exp1.tcl $tcpV $mbps $sec $counter
+            ns exp1.tcl $tcpV $mbps $tcpSec $counter
             #echo "t $counter}" >> $filename 
-            python parser.py $tcpV $sec $mbps $counter $filename
+            python parser.py $tcpV $tcpSec $mbps $counter $filename
             tracename="$tracefirst$counter$tracelast"
             rm $tracename                 
-                
+            #done    
         done
     done
 done

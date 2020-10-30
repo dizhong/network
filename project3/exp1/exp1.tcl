@@ -14,7 +14,8 @@ if {$argc != 4} {
     # 0 = Tahoe, 1 = Reno, 2 = newReno, 3 = Vegas
     set tcpVersion [lindex $argv 0]
     # range from 1~10 Mgbs
-    set CBRstart [lindex $argv 2]
+    set TCPstart [lindex $argv 2]
+    #set CBRstart [lindex $argv 3]
     #puts $CBRsize
     # either 5 seconds before or after or at the same as TCP; TCP at 5.0 const
     set CBRsize [lindex $argv 1]mbps
@@ -119,8 +120,8 @@ $cbr set rate_ $CBRsize
 $cbr set random_ false
 
 #schedule events for the CBR and FTP agents
-$ns at 5.0 "$ftp start"
-$ns at $CBRstart "$cbr start"
+$ns at $TCPstart "$ftp start"
+$ns at 2 "$cbr start"
 $ns at 125.0 "$ftp stop"
 $ns at 125.0 "$cbr stop"
 

@@ -36,11 +36,9 @@ def get_data(fileName):
                        results["tcp1_latency"],
                        results["tcp2_latency"])))
         data = np.array(sublist)
-        sublist = data.mean(axis=0)
-        #error = data.std(axis=0)
-        #print(mean)
-        #print(error)
-        #sublist = [mean, error]
+        mean = data.mean(axis=0)
+        err = data.std(axis=0)
+        sublist = tuple(zip(mean, err))
         if parameters["tcpVersion"] == 0:
             RR_data.append(sublist)
         elif parameters["tcpVersion"] == 1:
@@ -60,16 +58,14 @@ def get_data(fileName):
 #can probably plot 4 lines in eachi
 def plot_graph(rr, nr, vv, nv):
     pair_names = [("Reno", "Reno"), ("NewReno", "Reno"), ("Vegas", "Vegas"), ("NewReno", "Vegas")]
-    png_kinds = ["Average Throughput in Mbps", "Average Droprate in %", "Average Latency in Second"]
+    png_kinds = ["throughput", "droprate", "latency"]
     x_axis = []
     throughput_y = []
     droprate_y = []
     latency_y = []
     raw_data = [rr, nr, vv, nv]
-    x_axis = [x[0] for x in rr]
+    x_axis = [x[0][0] for x in rr]
     for data_list in raw_data:
-       # print(raw_data)
-        
         throughput_y_1 = [x[1] for x in data_list]
         throughput_y_2 = [x[2] for x in data_list]
         throughput_y.append(list(((throughput_y_1), (throughput_y_2))))
@@ -84,26 +80,29 @@ def plot_graph(rr, nr, vv, nv):
 
     #print(y_axis)
     #print(x_axis)
-    font = {'size'   : 22}
-
-    mpl.rc('font', **font)
-
+    reconstruct_y = []
     for png_kind in range(0, 3):
         current_y = y_axis[png_kind]
+        reconstruct_y_sub = []
         for pair_num in range(0, 4):
-            current_pair = current_y[pair_num]
+            current_pair_0 = current_y[pair_num][0]
+            current_pair_1 = current_y[pair_num][1]
+            mean_0 = np.array([x[0] for x in current_pair_0])
+            err_0 = np.array([x[1] for x in current_pair_0])
+            mean_1 = np.array([x[0] for x in current_pair_1])
+            err_1 = np.array([x[1] for x in current_pair_1])
+            x_axis = np.array(x_axis)
+            #print(current_pair_0)
             #if (png_kind == 2) and (pair_num == 0):
             #    print(current_pair)
             print(x_axis)
-            print(current_pair[0])
-            print(current_pair[1])
+            print(mean_0)
+            print(err_0)
             plt.xlim(0, 12)
-            plt.xlabel("CBR flow size in Mbps")
-            plt.ylabel(png_kinds[png_kind])
-            plt.plot(x_axis, current_pair[0], '-ok', linestyle="-.", label=pair_names[pair_num][0])
-            plt.plot(x_axis, current_pair[1], '-ok', label=pair_names[pair_num][1])
+            plt.errorbar(x_axis, mean_0, yerr=err_0, label=pair_names[pair_num][0], color='k')
+            plt.errorbar(x_axis, mean_1, yerr=err_1, label=pair_names[pair_num][1], color='y')
             plt.legend(bbox_to_anchor= (0., 1.02, 1., .102), loc='lower left', ncol=2, mode="expand", borderaxespad=0)
-            plt.savefig(png_kinds[png_kind] + pair_names[pair_num][0] + pair_names[pair_num][1] + ".png", bbox_inches = 'tight')
+            plt.savefig(png_kinds[png_kind] + pair_names[pair_num][0] + pair_names[pair_num][1] + ".png")
             plt.clf()
 
     return y_axis, pair_names, png_kinds
@@ -119,7 +118,6 @@ def main():
         current_y = y_axis[data_kind]
         for pair_num in range(0, 4):
             current_pair = current_y[pair_num]
-            #print(current_pair[0])
             t_value, p_value = stats.ttest_ind(current_pair[0], current_pair[1])
             ttest.write(pair_names[pair_num][0] + pair_names[pair_num][1] + ":"\
                         " " + data_kinds[data_kind] + "\nt_value:" \

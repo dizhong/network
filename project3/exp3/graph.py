@@ -79,19 +79,23 @@ def plot_graph(rdt, rred, sdt, sred):
 
     y_axis = [throughput_y, droprate_y, latency_y]
 
-    #print(y_axis)
-    #print(x_axis)
+    font = {'size': 20}
+    mpl.rc('font', **font)
+    #plt.figure(figsize=(20, 10))
+    flow_names = ['TCP', 'CBR']
+    png_kinds = ['Throughput', 'Droprate', 'Latency']
+    png_desc = [" Average Throughput in Mbps", " Average Droprate in %", " Average Latency in Seconds"]
     for png_kind in range(0, 3):
-        current_y = y_axis[png_kind]
-        for pair_num in range(0, 4):
-            current_pair = current_y[pair_num]
-            #if (png_kind == 2) and (pair_num == 0):
-            #    print(current_pair)
-            plt.xlim(10, 40)
-            plt.plot(x_axis, current_pair[0], '-ok', linestyle='-', label=pair_names[pair_num][0], color='k')
-            plt.plot(x_axis, current_pair[1], '-ok', linestyle='-.', label=pair_names[pair_num][1], color='y')
+        for flow_kind in range(0, 2):
+            plt.xlim(15, 60)
+            plt.xlabel(flow_names[flow_kind] + " flow start time in Seconds")
+            plt.ylabel(flow_names[flow_kind] + png_desc[png_kind])
+            plt.plot(x_axis, y_axis[png_kind][0][flow_kind], '-ok', linestyle='-', label="Reno+DT")
+            plt.plot(x_axis, y_axis[png_kind][1][flow_kind], '-ok', linestyle='-.', label="Reno+RED")
+            plt.plot(x_axis, y_axis[png_kind][2][flow_kind], '-ok', linestyle='--', label="SACK+DT")
+            plt.plot(x_axis, y_axis[png_kind][3][flow_kind], '-ok', linestyle=':', label="SACK+RED")
             plt.legend(bbox_to_anchor= (0., 1.02, 1., .102), loc='lower left', ncol=2, mode="expand", borderaxespad=0)
-            plt.savefig(png_kinds[png_kind] + pair_names[pair_num][0] + pair_names[pair_num][1] + ".png")
+            plt.savefig(flow_names[flow_kind] + png_kinds[png_kind] + ".png", bbox_inches='tight')
             plt.clf()
 
     return y_axis, pair_names, png_kinds
@@ -102,8 +106,10 @@ def main():
     fileName = "json.txt"
     R_DT_data, R_RED_data, S_DT_data, S_RED_data = get_data(fileName)
     y_axis, pair_names, data_kinds = plot_graph(R_DT_data, R_RED_data, S_DT_data, S_RED_data)  
-    #calculate t-test
+    
+    #calculate t-test and general avverage
     ttest = open("ttest.txt", "w")
+    averages = open("averages.txt", "w")
     for data_kind in range(0, 3):
         current_y = y_axis[data_kind]
         for pair_num in range(0, 4):
@@ -112,9 +118,29 @@ def main():
             ttest.write(pair_names[pair_num][0] + pair_names[pair_num][1] + ":"\
                         " " + data_kinds[data_kind] + "\nt_value:" \
                         " " + str(t_value) + " p_value: " + str(p_value) + "\n")
+            average_0 = sum(current_pair[0]) / len(current_pair[0])
+            average_1 = sum(current_pair[1]) / len(current_pair[1])
+            averages.write(pair_names[pair_num][0] + " Average " + data_kinds[data_kind] + ": " + str(average_0) + "\n")
+            averages.write(pair_names[pair_num][1] + " Average " + data_kinds[data_kind] + ": " + str(average_1) + "\n")
+
+    #calculate one-way anova
+    th_array = y_axis[0]
+    dr_array = y_axis[1]
+    la_array = y_axis[2]
+    th_anova_f, th_anova_p = stats.f_oneway(th_array[0], th_array[1], th_array[2], th_array[3])
+    print("Anova throughput: \nF: " + str(th_anova_f) + "P: " + str(th_anova_p))
+    dr_anova_f, dr_anova_p = stats.f_oneway(dr_array[0], dr_array[1], dr_array[2], dr_array[3])
+    print("Anova droprate: \nF: " + str(dr_anova_f) + "P: " + str(dr_anova_p))
+    la_anova_f, la_anova_p = stats.f_oneway(la_array[0], la_array[1], la_array[2], la_array[3])
+    print("Anova latency: \nF: " + str(la_anova_f) + "P: " + str(la_anova_p))
+
+    #calculate t-tests
+    
+
 
     ttest.close()
-
+    averages.close()
+    
 
 
 if __name__ == "__main__":

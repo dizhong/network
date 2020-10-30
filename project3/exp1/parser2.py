@@ -40,19 +40,18 @@ class Parser:
             counter += 1
             split = line.split(" ")
             key = int(split[10])
-            if float(split[1]) >= 5:
-                #store parameters of the traces of packets that were queued to send
-                if split[4] == "tcp" and split[0] == "+" and split[2] == "0":
-                    if key in q_seconds:
-                        q_seconds[key][2] += 1
-                        self.tcp_sent += 1
-                    else:
-                        q_seconds[key] = list((float(split[1]), int(split[5]), 1))
-                        self.tcp_sent += 1
-                #store parameters of the traces of acks that were received
-                elif split[4] == "ack" and split[0] == "r" and split[3] == "0" and key in q_seconds:
-                    if key not in r_seconds:
-                        r_seconds[key] = float(split[1])
+            #store parameters of the traces of packets that were queued to send
+            if split[4] == "tcp" and split[0] == "+" and split[2] == "0":
+                if key in q_seconds:
+                    q_seconds[key][2] += 1
+                    self.tcp_sent += 1
+                else:
+                    q_seconds[key] = list((float(split[1]), int(split[5]), 1))
+                    self.tcp_sent += 1
+            #store parameters of the traces of acks that were received
+            elif split[4] == "ack" and split[0] == "r" and split[3] == "0":
+                if key not in r_seconds:
+                    r_seconds[key] = float(split[1])
         return q_seconds, r_seconds, dropped
 
 
@@ -80,7 +79,7 @@ class Parser:
             q_time = q_seconds[key][0]
             latency_list.append(r_time - q_time)
         self.tcp_goodput_bytes = tcp_goodput
-        self.tcp_goodput_Mbps = self.tcp_goodput_bytes / (125000.0 * 120)
+        self.tcp_goodput_Mbps = self.tcp_goodput_bytes / (125000.0 * second-1.0)
         self.tcp_latency = sum(latency_list) / len(latency_list)
         
         # find the number of dropped packets by counting all the packets
@@ -102,7 +101,7 @@ class Parser:
 # main feeds files into parser, and produce graphs
 def main():
     tcpV = int(sys.argv[1])
-    tcpSec = int(sys.argv[2])
+    sec = int(sys.argv[2])
     mbps = int(sys.argv[3])
     fileNum = int(sys.argv[4])
     fileName = "trace_files/exp1_" + str(fileNum) + ".tr"
@@ -130,8 +129,7 @@ def main():
 
     pkt_drop_rate = (myparser.tcp_drops / float(myparser.tcp_sent)) * 100
 
-    write_string = ("tcpV: " + str(tcpV) + "; tcpSec: " + str(tcpSec) + ";"\
-                  " mbps:" \
+    write_string = ("tcpV: " + str(tcpV) + "; sec:" + str(sec) + "; mbps:" \
                  " " + str(mbps) + "; counter: " + str(fileNum) + "\n" \
                  "tcp_drops: " + str(myparser.tcp_drops) + "; " \
                  "tcp_drop_rate: " + str(pkt_drop_rate) + "%; " \
@@ -153,9 +151,8 @@ def main():
 
     json_out = open('json.txt', "a")
     data = {}
-    data = {"parameters": {"tcpVersion": tcpV,
-                           "TCPStartSec": tcpSec, 
-                           #"CBRStartSec": cbrSec,
+    data = {"parameters": {"tcpVersion": tcpV, 
+                           "CBRStartSec": sec,
                            "CBRFlowMbps":  mbps, 
                            "SimulationCounter": fileNum},
             "results": {"tcp_drops": myparser.tcp_drops,

@@ -4,6 +4,8 @@
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
+import numpy as np
+from scipy import stats
 import math
 import sys
 import json
@@ -71,31 +73,40 @@ def plot_graph(tahoe, reno, newreno, vegas):
     y_v_d = [x[2] for x in vegas]
     y_v_l = [x[3] for x in vegas]
 
+    font = {'size':20}
+    mpl.rc('font', **font)
+
     plt.xlim(0, 12)
-    plt.plot(x_t, y_t_t, '-ok', label='Tahoe', color='k')
-    plt.plot(x_r, y_r_t, '-ok', label='Reno', color='y')
-    plt.plot(x_n, y_n_t, '-ok', label='NewReno', color='g')
-    plt.plot(x_v, y_v_t, '-ok', label='Vegas', color='b')
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.savefig("throughput.png")
+    plt.xlabel("CBR flow size in Mbps")
+    plt.ylabel("TCP average throughput in Mbps")
+    plt.plot(x_t, y_t_t, '-ok', label='Tahoe', linestyle='--')
+    plt.plot(x_r, y_r_t, '-ok', label='Reno', linestyle='-.')
+    plt.plot(x_n, y_n_t, '-ok', label='NewReno', linestyle=':')
+    plt.plot(x_v, y_v_t, '-ok', label='Vegas', linestyle='-')
+    plt.legend(bbox_to_anchor= (0., 1.02, 1., .102), loc='lower left', ncol=2, mode="expand", borderaxespad=0)
+    plt.savefig("throughput.png", bbox_inches='tight')
 
     plt.clf()
     plt.xlim(0, 12)
-    plt.plot(x_t, y_t_d, '-ok', label='Tahoe', color='k')
-    plt.plot(x_r, y_r_d, '-ok', label='Reno', color='y')
-    plt.plot(x_n, y_n_d, '-ok', label='NewReno', color='g')
-    plt.plot(x_v, y_v_d, '-ok', label='Vegas', color='b')
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.savefig("droprate.png")
+    plt.xlabel("CBR flow size in Mbps")
+    plt.ylabel("TCP drop rate in %")
+    plt.plot(x_t, y_t_d, '-ok', label='Tahoe', linestyle='--')
+    plt.plot(x_r, y_r_d, '-ok', label='Reno', linestyle='-.')
+    plt.plot(x_n, y_n_d, '-ok', label='NewReno', linestyle=':')
+    plt.plot(x_v, y_v_d, '-ok', label='Vegas', linestyle='-')
+    plt.legend(bbox_to_anchor= (0., 1.02, 1., .102), loc='lower left', ncol=2, mode="expand", borderaxespad=0)
+    plt.savefig("droprate.png", bbox_inches='tight')
 
     plt.clf()
     plt.xlim(0, 12)
-    plt.plot(x_t, y_t_l, '-ok', label='Tahoe', color='k')
-    plt.plot(x_r, y_r_l, '-ok', label='Reno', color='y')
-    plt.plot(x_n, y_n_l, '-ok', label='NewReno', color='g')
-    plt.plot(x_v, y_v_l, '-ok', label='Vegas', color='b')
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.savefig("latency.png")
+    plt.xlabel("CBR flow size in Mbps")
+    plt.ylabel("TCP latency in Seconds")
+    plt.plot(x_t, y_t_l, '-ok', label='Tahoe', linestyle='--')
+    plt.plot(x_r, y_r_l, '-ok', label='Reno', linestyle='-.')
+    plt.plot(x_n, y_n_l, '-ok', label='NewReno', linestyle=':')
+    plt.plot(x_v, y_v_l, '-ok', label='Vegas', linestyle='-')
+    plt.legend(bbox_to_anchor= (0., 1.02, 1., .102), loc='lower left', ncol=2, mode="expand", borderaxespad=0)
+    plt.savefig("latency.png", bbox_inches='tight')
     plt.clf()
 
     throughput_list = [y_t_t, y_r_t, y_n_t, y_v_t]
@@ -108,7 +119,20 @@ def main():
     tahoe, reno, newreno, vegas = get_data(fileName)
     throughput, droprate, latency = plot_graph(tahoe, reno, newreno, vegas)  
     #calculate t-test for select pairs
+    ttest = open("ttest.txt", "w")
+    against = ["Tahoe", "Reno", "NewReno"]
+    #print(throughput)
+    for i in range(0, 3):
+        for m in range(0, 10):
+            th_t, th_p = stats.ttest_ind(throughput[3][(m*4):((m+1)*4)], throughput[i][(m*4):((m+1)*4)])
+            dr_t, dr_p = stats.ttest_ind(droprate[3][(m*4):((m+1)*4)], droprate[i][(m*4):((m+1)*4)])
+            la_t, la_p = stats.ttest_ind(latency[3][(m*4):((m+1)*4)], latency[i][(m*4):((m+1)*4)])
+            ttest.write("Vegas with " + against[i] + str(m) + "Mbps\n" \
+                    "Throughput: t=" + str(th_t) + ", p=" + str(th_p) + "\n"\
+                    "Droprate: t=" + str(dr_t) + ", p=" + str(dr_p) + "\n"\
+                    "Latency: t=" + str(la_t) + ", p=" + str(la_p) + "\n")
 
+    ttest.close()
 
 if __name__ == "__main__":
     main()
