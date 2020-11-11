@@ -31,6 +31,14 @@ def main():
         print('Socket could not be created. Error Code: ' + str(msg[0]) + ' Message ' + msg[1])
         sys.exit()
 
+    # create a new recv socket with SOCK_RAW/IPPROTO_IP
+    #try:
+    s_recv = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
+    #except (socket.error, msg):
+    #    print('RecvSock creation error. Code: ' + str(msg[0]) + msg[1])
+    #    sys.exit()
+
+
     packet = ''
     source_ip = ni.ifaddresses('ens33')[ni.AF_INET][0]['addr']
     s.bind((source_ip, 0))
@@ -101,13 +109,25 @@ def main():
 
     count = 3
 
-    for i in range(count):
-        print('sending packet... ')
-        s.sendto(packet, (dest_ip, 80))
-        print('send')
-        time.sleep(1)
+    s.sendto(packet, (dest_ip, 80))
+    
+    #s_recv.bind((socket.gethostbyname(socket.gethostname()), source_port))
+    wut = s_recv.recv(1028)
+    print(wut)
 
-    print('all packets send')
+    wut = s_recv.recvmsg(1028)
+    print(wut)
+    wut = s_recv.recvmsg(1028)
+    print(wut)
+    wut = s_recv.recvmsg(1028)
+    print(wut)
+    wut = s_recv.recvmsg(1028)
+    print(wut)
+    wut = s_recv.recvmsg(1028)
+    print(wut)
+    wut = s_recv.recvmsg(1028)
+    print(wut)
+
 
 
 
