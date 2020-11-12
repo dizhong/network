@@ -45,18 +45,18 @@ def ip_header(ip_id, source_ip, dest_ip):
     return ip_header
 
 
-def tcp_header(source_port, seq, ack, window, source_ip, dest_ip, data):
+def tcp_header(source_port, seq, ack_n, window, source_ip, dest_ip, data, syn, ack, fin):
     tcp_source = source_port
     tcp_dest = 80
     tcp_seq = seq
-    tcp_ack_seq = ack
+    tcp_ack_seq = ack_n
     tcp_doff = 5
     # tcp flags
-    tcp_fin = 0
-    tcp_syn = 1
+    tcp_fin = fin
+    tcp_syn = syn
     tcp_rst = 0
     tcp_psh = 0
-    tcp_ack = 0
+    tcp_ack = ack
     tcp_urg = 0
     tcp_window = socket.htons(window) #though what is that socket.htons() thing?
     tcp_check = 0
@@ -74,7 +74,7 @@ def tcp_header(source_port, seq, ack, window, source_ip, dest_ip, data):
     tcp_length = len(tcp_header)
 
     psu_h = pack('!4s4sBBH', source_address, dest_address, placeholder, protocol, tcp_length)
-    psu_h = psu_h + tcp_header + data
+    psu_h = psu_h + tcp_header
 
     tcp_check = checksum(psu_h)
 
@@ -83,8 +83,23 @@ def tcp_header(source_port, seq, ack, window, source_ip, dest_ip, data):
     return tcp_header;
 
 
-def http_header(dest):
-    
-    return;
+#def http_header(dest):
+#    
+#    return;
+
+
+def ip_processing(ip_header):
+    total_length = unpack('!H', ip_header[2:4])
+    #print(total_length[0])
+    return total_length[0];
+
+
+# i'm just gonna skip the options here cuz what do i use them for?
+def tcp_processing(tcp_header):
+    seq_num = unpack('!L', tcp_header[4:8])
+    ack_num = unpack('!L', tcp_header[8:12])
+    tcp_len = (tcp_header[12] >> 4) * 4
+    print(tcp_len)
+    return seq_num[0], ack_num[0], tcp_len;
 
 

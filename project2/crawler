@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+
+import socket, sys
+from html_parser import Parser
+import crawler_helper
+
+#takes two arguments, username and password
+def main():
+    username = sys.argv[1];
+    password = sys.argv[2];
+    #f_log = open("logs.txt", "w")
+    client = socket.create_connection(("fring.ccs.neu.edu", 80))
+    #something about cookie and csrf
+    request = "GET /accounts/login/?next=/fakebook/ HTTP/1.1\r\n" \
+              "HOST: fring.ccs.neu.edu\r\n\r\n" 
+    client.sendall(request.encode())
+    #f_log.write(request + "\n")
+    #parse the response message
+    body, parsed_header, header = crawler_helper.get_message(client)
+    #f_log.write(header + "\n" + body)
+    my_parser = Parser()
+    my_parser.feed(body)
+    cookie = parsed_header['cookie']
+    csrf = parsed_header['csrf']
+    csrfmiddleware = my_parser.get_csrfmiddlewaretoken()
+    request = crawler_helper.http_post(cookie, csrf, csrfmiddleware, username, password)
+    #f_log.write(request + "\n")
+    
+    #send the POST message for logging in
+    client.sendall(request.encode())
+    body, parsed_header, header = crawler_helper.get_message(client)
+    #f_log.write(header + "\n" + body)
+    #start the url list for keeping the urls and secret_flags list
+    url_list = []
+    url_list.append(parsed_header['url'])
+    url_list_len = 1
+    cookie = parsed_header['cookie']
+    visited_set = set()
+    secret_flags = []
+
+    #enter a crawling loop as long as there's still urls to go through
+    while (len(url_list)):
+        current_url = url_list.pop()
+        #check if the url at top of stack is already visited; if yes, skip to next
+        if (current_url in visited_set):
+            continue
+        #otherwise proceed with that url
+        else:
+            request = crawler_helper.http_get(current_url, cookie)
+            #f_log.write(request + "\n")
+            client.sendall(request.encode())
+            body, parsed_header, header = crawler_helper.get_message(client)
+            #f_log.write(header + "\n" + body)
+            #check http response code
+            #301 moved permenantly: retry using new url
+            if (int(parsed_header['status']/100) == 3):
+                #print("encountered " + str(parsed_header['status']))
+                url_list.append(parsed_header['url']) 
+            #403 forbidden, 404 not found: give up and try next
+            elif (int(parsed_header['status']/100) == 4):
+                visited_set.add(current_url)
+            #500 internal server error: retry with the same url
+            elif (int(parsed_header['status']/100) == 5):
+                url_list.append(current_url)
+                #print("encountered " + str(parsed_header['status']))
+            #200 ok
+            elif (int(parsed_header['status']/100) == 2):
+                my_parser = Parser()
+                my_parser.feed(body)
+                visited_set.add(current_url)
+                #url_list_len = url_list_len -1
+                new_urls = my_parser.get_urls()
+                url_list = url_list + new_urls
+            #connection closed by server, retry with same url
+            elif (int(parsed_header['status']/100) == 10):
+                client = socket.create_connection(("fring.ccs.neu.edu", 80))
+                url_list.append(current_url)
+            else:
+                print("error: unhandled http status code")
+
+
+if __name__ == "__main__":
+    main()

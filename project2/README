@@ -1,0 +1,23 @@
+Overview:
+
+This submission implements a crawler using HTTP 1.1.
+
+The crawler consists of three files, crawler, crawler_helper.py, and html_parser.py.
+crawler file includes the main linear logic for the running of the crawler.
+crawler_helper includes four helper functions and a class, class Read (being used in get_response for reading server responses), get_response, http_header_parse, http_get and http_post. The parse function roughly parses the http header and strips out the information I need. The http_get and http_post functions take in needed information, and return an assembled http message.
+
+html_parser implements python's html_parser class, with the functions I need for this crawler.
+
+
+Difficulties:
+
+At first I spent a lot of time reading about HTTP headers, thinking it must be more complicated than it seems. Turned out that it was about as complicated as it seemed, which was surprising.
+
+I also spent a lot of time figuring out the CSRF token on the login page. I wasen't sure whether it should be submitted with the cookies or have its own line in the header field, so I tried out different combinations, and also parsed the csrfmiddlewaretoken from the Data part out, though I don't think that ended up being necessary.
+My logic for tracking the frontier was broken in various ways for quite a while, which eventually made me discover sets in python and decided to switch to using that.
+
+I did not realize that the support for http 1.1 was required, and having to meet a new requirement put some stress onto my schedule. Though it helped me realize that the way I was receiving responses from the server was broken, since I was naively receiving a big chunk of thing, and for 1.0 that just happened to work. I spent a lot of time fixing my receive, and some more time supporting the chunked encoding.
+
+Testing:
+
+I tested my code by repeatedly running it with my NUID and the given password. It seems like the crawler only ever encountered normal page, 404 and 500, so I did not get to test my handling of 300 pages, other than the once in login, which was not part of my main loop for crawling thus did not end up in the if-else clauses for handling http status codes.
