@@ -78,6 +78,9 @@ def main():
         ip_header = chunk[0:ip_len]
         chunk = chunk[ip_len:]
         total_len = h.ip_processing(ip_header)
+        check_checksum = h.checksum(ip_header)
+        print(check_checksum)
+        print("above checksum")
     else:
         print("ip header processing--need code to read more")
 
@@ -108,6 +111,7 @@ def main():
     ack = 0
     fin = 0
     ip_h = h.ip_header(2, source_ip, dest_ip)
+
     #http_body = sth
     #tcp_h = h.tcp_header(source_port, 0, seq_n+2+len(http_body), 200, source_ip, dest_ip, b'', syn, ack, fin)
     #request_pkt = ip_h + tcp_h + http_body
