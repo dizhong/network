@@ -47,6 +47,22 @@ def main():
 
     conn = create_connection(dest_ip)
 
+    # send the syn packet to start the connection
+    tcp_flags = {'syn':1, 'ack':0, 'fin':0}
+    conn.send(tcp_flags, b'')
+
+    conn.recv()
+    # send the ack packet to establish handshake
+    tcp_flags = {'syn':0, 'ack':1, 'fin':0}
+    conn.send(tcp_flags, b'')
+
+    # now send the http request
+    tcp_flags = {'syn':0, 'ack':0, 'fin':0}
+
+    # and then close the connection on our side
+    tcp_flags = {'syn':0, 'ack':0, 'fin':1}
+
+    # and receive the actual file i guess
        
  
 

@@ -50,17 +50,15 @@ def ip_processing(ip_header, our_ip, server_ip):
 
     # TODO check if source_ip and dest_ip is what we want,
     # notice that it is flipped from the source and dest we get
-    addr = unpack('!4s4s', ip_header[12:16])
-    source_addr = addr[0]
-    dest_addr = addr[0]
-    print(source_addr)
-    print(dest_addr)
+    addr = unpack('!4s4s', ip_header[12:20])
+    source_addr = socket.inet_ntoa(addr[0])
+    dest_addr = socket.inet_ntoa(addr[1])
+    ip_ver = ip_header[0] >> 4
 
     # check the checksum
-    checksum = checksum(ip_header)
-    print(checksum == 0)
+    c_sum = checksum(ip_header)
 
-    if (source_addr == server_ip) and (dest_addr == our_ip) and (checksum == 0):
+    if (source_addr == server_ip) and (dest_addr == our_ip) and (c_sum == 0) and (ip_ver == 4):
         correct_flg = True
 
     return total_length[0], correct_flg

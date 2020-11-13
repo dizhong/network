@@ -7,7 +7,7 @@ import netifaces as ni
 def checksum(msg):
     sumN = 0
 
-    #loop taking 2 characters at a time
+    # wtf is i+1 shifted LEFT for 8 bits
     for i in range(0, len(msg), 2):
         word = msg[i] + (msg[i+1]<<8)
         sumN = sumN + word
@@ -29,11 +29,11 @@ def tcp_header(source_port, seq, ack_n, window, source_ip, dest_ip, data, flags)
     tcp_ack_seq = ack_n
     tcp_doff = 5
     # tcp flags
-    tcp_fin = flags[2]
-    tcp_syn = flags[0]
+    tcp_fin = flags['fin']
+    tcp_syn = flags['syn']
     tcp_rst = 0
     tcp_psh = 0
-    tcp_ack = flags[1]
+    tcp_ack = flags['ack']
     tcp_urg = 0
     tcp_window = socket.htons(window) #though what is that socket.htons() thing?
     tcp_check = 0
@@ -52,7 +52,7 @@ def tcp_header(source_port, seq, ack_n, window, source_ip, dest_ip, data, flags)
 
     psu_h = pack('!4s4sBBH', source_address, dest_address, placeholder, protocol, tcp_length)
     
-    if 1 in flags:
+    if 1 in flags.values():
         psu_pkt = psu_h + tcp_header
     else:
         psu_pkt = psu_h + tcp_header + data
@@ -71,7 +71,7 @@ def tcp_processing(tcp_header, our_port):
     tcp_len = (tcp_header[12] >> 4) * 4
     print(tcp_len)
 
-    port = unpack('!H', tcp_dest)
+    port = unpack('!H', tcp_header[2:4])
     if our_port == port[0]:
         flag = True
     else:
