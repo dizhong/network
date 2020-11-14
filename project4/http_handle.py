@@ -47,13 +47,12 @@ def get_message(client):
     if header is None:
         return "", {'status':1000}, ""
     parsed_header = response_header_parse(header.decode())
-    #print(header.decode())
-    #get chunks in a loop
     if parsed_header['chunked'] == True:
         chunk = b''
         suffix = b'\r\n'
         length = True
         #length = read_message.read_until(suffix)
+        #get chunks in a loop
         while length != 0:
             length = read_message.read_until(suffix)
             if length is None:
@@ -69,10 +68,10 @@ def get_message(client):
             #print(str(length) + " length of chunk\n")
             #print(chunk.decode())
     else:
+        #get response when not chunked
         response = read_message.read_bytes(parsed_header['length'])
         
     return response.decode(), parsed_header, header.decode()
-    #get response when not chunked
 
 
 def http_get(request_url):

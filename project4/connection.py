@@ -35,12 +35,13 @@ class Connection():
         self.ip_count += 1
         tcp_h = tcp.tcp_header(self.port, self.tcp_seq, self.tcp_ack, self.tcp_window, self.sip, self.dip, data, tcp_flags)
         
-        if 1 in tcp_flags:
+        if tcp_flags['syn'] == 1:
             packet = ip_h + tcp_h
             self.tcp_seq = self.tcp_seq + 1
         else:
             packet = ip_h + tcp_h + data
-            self.tcp_seq = self.tcp_seq + 1 + len(data)
+            self.tcp_seq = self.tcp_seq + len(data)
+            # does tcp header not consume any # in seq?
 
         self.s_send.sendto(packet, (self.dip, 80))
         

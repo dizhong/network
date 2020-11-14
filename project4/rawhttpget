@@ -57,13 +57,13 @@ def main():
     conn.send(tcp_flags, b'')
 
     # now send the http request
-    tcp_flags = {'syn':0, 'ack':0, 'fin':0}
+    tcp_flags = {'syn':0, 'ack':1, 'fin':0}
     data = http.http_get(dest_url)
     data = data.encode()
     conn.send(tcp_flags, data)
 
     # and then close the connection on our side
-    tcp_flags = {'syn':0, 'ack':0, 'fin':1}
+    tcp_flags = {'syn':0, 'ack':1, 'fin':1}
     conn.send(tcp_flags, b'')
 
     # and receive the actual file i guess
