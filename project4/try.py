@@ -70,6 +70,8 @@ def main():
     # recv the ip version + header length uhh... byte?
     chunk = s_recv.recv(1000)
     byte = chunk[0]
+    print(byte)
+    print(chunk)
     ver = byte >> 4
     ip_len = (byte & 15) * 4
     print(str(ver) + ' ' + str(ip_len))

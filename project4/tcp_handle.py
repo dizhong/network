@@ -26,7 +26,10 @@ def tcp_header(source_port, seq, ack_n, window, source_ip, dest_ip, data, flags)
     tcp_source = source_port
     tcp_dest = 80
     tcp_seq = seq
-    tcp_ack_seq = ack_n
+    if flags['ack'] == 0:
+        tcp_ack_seq = 0
+    else:
+        tcp_ack_seq = ack_n
     tcp_doff = 5
     # tcp flags
     tcp_fin = flags['fin']

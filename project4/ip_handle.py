@@ -27,7 +27,7 @@ def ip_header(ip_id, source_ip, dest_ip):
     ip_ihl = 5
     ip_tos = 0
     ip_len = 0 # supposedly kernel fills this out?
-    ip_id = ip_id  # think this should always be 0 here?
+    ip_id = ip_id  # should this always be 0 here?
     # ip_flag = 0 included in ip_frag_off
     ip_frag_off = 0
     ip_ttl = 225

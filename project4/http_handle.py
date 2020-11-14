@@ -70,6 +70,16 @@ def get_message(client):
             #print(chunk.decode())
     else:
         response = read_message.read_bytes(parsed_header['length'])
+        
     return response.decode(), parsed_header, header.decode()
     #get response when not chunked
+
+
+def http_get(request_url):
+    request = "GET " + request_url + " HTTP/1.1\r\n"\
+              "HOST: fring.ccs.neu.edu\r\n\r\n"
+             #"Cookie:" + cookie + "\r\n\r\n"
+             # "X-CSRFTOKEN:" + csrf + "\r\n\r\n"
+    return request
+
 
