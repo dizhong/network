@@ -71,12 +71,13 @@ def get_message(client):
         #get response when not chunked
         response = read_message.read_bytes(parsed_header['length'])
         
-    return response.decode(), parsed_header, header.decode()
+    return response.decode()
 
-
-def http_get(request_url):
-    request = "GET " + request_url + " HTTP/1.1\r\n"\
-              "HOST: fring.ccs.neu.edu\r\n\r\n"
+# given a request url (String), return a composed one-time
+# request message (String) without cookie or token
+def http_get(file_path, host_name):
+    request = "GET /" + file_path + " HTTP/1.1\r\n"\
+              "HOST: " + host_name + "\r\n\r\n"
              #"Cookie:" + cookie + "\r\n\r\n"
              # "X-CSRFTOKEN:" + csrf + "\r\n\r\n"
     return request

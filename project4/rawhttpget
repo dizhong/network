@@ -10,6 +10,7 @@ import tcp_handle as tcp
 import http_handle as http
 
 
+
 def create_connection(dest_ip):
     # create a new send socket with SOCK_RAW/IPPROTO_RAW
     try:
@@ -35,11 +36,13 @@ def create_connection(dest_ip):
     return conn
 
 
+
 def main():
     # get download url from args and get ip and split out/create file name
     dest_url = sys.argv[1]
-    website = dest_url.split("//")[1].split("/")[0]
-    dest_ip = socket.gethostbyname(website)
+    host_name = dest_url.split("//")[1].split("/")[0]
+    file_path = dest_url.split("//")[1].split("/", 1)[1]
+    dest_ip = socket.gethostbyname(host_name)
     file_name = dest_url.split("//")[1].split("/")[-1]
     if file_name == '':
         file_name = 'index.html'
@@ -51,15 +54,17 @@ def main():
     tcp_flags = {'syn':1, 'ack':0, 'fin':0}
     conn.send(tcp_flags, b'')
 
-    conn.recv()
-    # send the ack packet to establish handshake
-    tcp_flags = {'syn':0, 'ack':1, 'fin':0}
-    conn.send(tcp_flags, b'')
+    conn.recv(4069)
+    # send the ack packet to establish handshake--actually handled by recv
+    # tcp_flags = {'syn':0, 'ack':1, 'fin':0}
+    # conn.send(tcp_flags, b'')
 
     # now send the http request
     tcp_flags = {'syn':0, 'ack':1, 'fin':0}
-    data = http.http_get(dest_url)
+    data = http.http_get(file_path, host_name)
     data = data.encode()
+    if len(data) % 2 == 1:
+        data = data + b'0'
     conn.send(tcp_flags, data)
 
     # and then close the connection on our side
@@ -67,8 +72,10 @@ def main():
     conn.send(tcp_flags, b'')
 
     # and receive the actual file i guess
-    data = conn.recv()
-    print(data)
+    response = http.get_message(conn)
+    f = open(file_name, 'w')
+    f.write(response)
+    f.close()
  
 
 

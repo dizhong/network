@@ -1,27 +1,37 @@
-# this is purely for sending a packet and checking if it looks right on wireshark
-
-import socket, sys, time
+import socket, sys, time, random
 from struct import *
 import netifaces as ni
 
+# method for calculating checksum
 def checksum(msg):
-    s = 0
-    
-    # why shift 8????
+    sumN = 0
+
+    #if len(msg) % 2 == 1:
+    #    msg = msg + b'0'
+    print(len(msg))
+        
+    # wtf is i+1 shifted LEFT for 8 bits
     for i in range(0, len(msg), 2):
-        w = msg[i] + (msg[i+1] << 8)
-        s = s + w
+        word = msg[i] + (msg[i+1]<<8)
+        sumN = sumN + word
 
-    # why shift 16??? oh and this is shifting on a different direction too
-    s = (s>>16) + (s & 0xffff)
-    # hmmm and then there is more shifting of 16
-    s = s + (s >> 16)
+    # add the carry???
+    sumN = (sumN>>16) + (sumN & 0xffff)
+    sumN = sumN + (sumN>>16)
 
-    # and wtf is that squiggly line lolol
-    s = ~s & 0xffff
+    #complement and mask to 4 byte short (huh??)
+    sumN = ~sumN & 0xffff
+
+    return sumN
+
+  
+def http_get(request_url):
+    request = "GET " + request_url + " HTTP/1.1\r\n"\
+              "HOST: fring.ccs.neu.edu\r\n\r\n"
+             #"Cookie:" + cookie + "\r\n\r\n"
+             # "X-CSRFTOKEN:" + csrf + "\r\n\r\n"
+    return request.encode()
     
-    return s
-
 
 def main():
 
@@ -43,8 +53,7 @@ def main():
     source_ip = ni.ifaddresses('ens33')[ni.AF_INET][0]['addr']
     s.bind((source_ip, 0))
     source_port = s.getsockname()[1]
-    dest_ip = socket.gethostbyname('david.choffnes.com')
-    print(dest_ip)
+    dest_ip ='127.0.0.1'
 
     # ip header fields
     ip_ihl = 5
@@ -72,10 +81,10 @@ def main():
     tcp_doff = 5
     # tcp flags
     tcp_fin = 0
-    tcp_syn = 1
+    tcp_syn = 0
     tcp_rst = 0
     tcp_psh = 0
-    tcp_ack = 0
+    tcp_ack = 1
     tcp_urg = 0
     tcp_window = socket.htons(5840)
     tcp_check = 0
@@ -94,38 +103,47 @@ def main():
     dest_address = socket.inet_aton(dest_ip)
     placeholder = 0
     protocol = socket.IPPROTO_TCP
+    
+    request = http_get('david.choffines.com')
+    if len(request) % 2 == 1:
+        request = request + b'0'
+    tcp_length = len(tcp_header) + len(request)
+
+    psu_h = pack('!4s4sBBH', source_address, dest_address, placeholder, protocol, tcp_length)
+    
+    
+    
+    #request = b''
+    psu_pkt = psu_h + tcp_header + request
+
+    tcp_check = checksum(psu_pkt)
+    #print(tcp_check)
+
+    header = pack('!HHLLBBH', tcp_source, tcp_dest, tcp_seq, tcp_ack_seq, tcp_offset_res, tcp_flags, tcp_window) + pack('H', tcp_check) + pack('!H', tcp_urg_ptr)
+
+    packet = ip_header + header + request
+
+    s.sendto(packet, (dest_ip, 80))
+
+
     tcp_length = len(tcp_header)
 
     psu_h = pack('!4s4sBBH', source_address, dest_address, placeholder, protocol, tcp_length)
-    # wait, user data is counted too? oh right its the checksum of entire thing
-    psu_h = psu_h + tcp_header
+    psu_pkt2 = psu_h + tcp_header
 
-    tcp_check = checksum(psu_h)
-    print(tcp_check)
 
-    tcp_header = pack('!HHLLBBH', tcp_source, tcp_dest, tcp_seq, tcp_ack_seq, tcp_offset_res, tcp_flags, tcp_window) + pack('H', tcp_check) + pack('!H', tcp_urg_ptr)
+    tcp_check2 = checksum(psu_pkt2)
+    print(tcp_check2)
 
-    packet = ip_header + tcp_header
+    tcp_header2 = pack('!HHLLBBH', tcp_source, tcp_dest, tcp_seq, tcp_ack_seq, tcp_offset_res, tcp_flags, tcp_window) + pack('H', tcp_check2) + pack('!H', tcp_urg_ptr)
 
-    count = 3
+    packet2 = ip_header + tcp_header2
 
-    flags = tcp_header[13]
-    fin = flags & 1
-    print(fin)
-    syn = (flags >> 1) & 1
-    print(syn)
-    rst = (flags >> 2) & 1
-    print(rst)
-    psh = (flags >> 3) & 1
-    print(psh)
-    ack = (flags >> 4) & 1
-    print(ack)
+    s.sendto(packet2, (dest_ip, 80))
+
 
 
 
 if __name__ == "__main__":
     main()
-
-
-
 

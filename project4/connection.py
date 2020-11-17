@@ -87,38 +87,48 @@ class Connection():
         # trim the rest of pkt length from buffer and get out
         if not correct_pkt:
             trimmed = self.trim_buffer(total_len-ip_len)
-            return False, trimmed
+            return False, b'', None
 
         # if correct, go on to recv the tcp header in a similar way
         # but we're gonna ignore the options and just read in 24 bytes first
         tcp_partial_header = self.sock_get_bytes(24)
-        seq_n, ack_n, tcp_len, correct_pkt = tcp.tcp_processing(tcp_partial_header, self.port)
+        seq_n, ack_n, tcp_len, correct_pkt, flags = tcp.tcp_processing(tcp_partial_header, self.port, self.tcp_ack)
 
         #TODO logic for jumping out when incorrect and for updating seq ack
         if not correct_pkt:
             self.trim_buffer(total_len-ip_len-tcp_len)
-            return False, trimmed
+            return False, b'', None
         
         self.tcp_ack = seq_n + 1
         trimmed = self.trim_buffer(total_len-ip_len-tcp_len)
-        return True, trimmed
+        return True, trimmed, flags
 
 
     # function to get http etc data from the correct pkt
-    def recv(self):
+    def recv(self, bufsize):
+        self.recvsize = bufsize
+    
         getting_pkt = False
         data = b''
+        recv_flags = {}
         start_time = time.time()
         elapsed_time = 0
         counter = 0
-        while((not getting_pkt) and (elapsed_time < 180)):
-            getting_pkt, data = self.check_pkt()
+        while((not getting_pkt) and (elapsed_time < 180) and (len(data) <= 0)):
+            getting_pkt, data, recv_flags = self.check_pkt()
             elapsed_time = time.time() - start_time
             counter = counter + 1
             
         if (elapsed_time >= 180):
             print("exiting program because wait time exceeds 3 minutes")
             sys.exit()
+            
+        # the only thing to not send ack for is ack only pkts i think
+        # probably need a flag for getting fin to tell the main
+        print(recv_flags)
+        if (not recv_flags['is_ack']):
+            ack_flags = {'syn':0, 'ack':1, 'fin':0}
+            self.send(ack_flags, b'')
         
         print("after " + str(counter) + " got one?")
         return data

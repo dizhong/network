@@ -2,11 +2,13 @@ import socket, sys, time, random
 from struct import *
 import netifaces as ni
 
-# calculating checksum
-
+# method for calculating checksum
 def checksum(msg):
     sumN = 0
-
+    
+    if len(msg) % 2 == 1:
+        msg = msg + b'\x00'
+        
     # wtf is i+1 shifted LEFT for 8 bits
     for i in range(0, len(msg), 2):
         word = msg[i] + (msg[i+1]<<8)
@@ -21,8 +23,10 @@ def checksum(msg):
 
     return sumN
 
-
+# method for constructing TCP header, given a lot of things
+# returns a constructed TCP header
 def tcp_header(source_port, seq, ack_n, window, source_ip, dest_ip, data, flags):
+
     tcp_source = source_port
     tcp_dest = 80
     tcp_seq = seq
@@ -51,14 +55,16 @@ def tcp_header(source_port, seq, ack_n, window, source_ip, dest_ip, data, flags)
     dest_address = socket.inet_aton(dest_ip)
     placeholder = 0
     protocol = socket.IPPROTO_TCP
-    tcp_length = len(tcp_header)
+    tcp_length = len(tcp_header) + len(data)
 
     psu_h = pack('!4s4sBBH', source_address, dest_address, placeholder, protocol, tcp_length)
     
-    if 1 in flags.values():
-        psu_pkt = psu_h + tcp_header
-    else:
-        psu_pkt = psu_h + tcp_header + data
+    #deciding whether to append data for checksum or this is a header-only packet
+    #honestly not very useful, may be deletable
+    #if flags[syn] == 1:
+    #    psu_pkt = psu_h + tcp_header
+    #else:
+    psu_pkt = psu_h + tcp_header + data
 
     tcp_check = checksum(psu_pkt)
 
@@ -68,20 +74,38 @@ def tcp_header(source_port, seq, ack_n, window, source_ip, dest_ip, data, flags)
 
 
 # i'm just gonna skip the options here cuz what do i use them for?
-def tcp_processing(tcp_header, our_port):
+# process the tcp header part of a captured packet, excluding options
+# flag is for determining whether this is a packet we're looking for
+def tcp_processing(tcp_header, our_port, current_ack):
     seq_num = unpack('!L', tcp_header[4:8])
     ack_num = unpack('!L', tcp_header[8:12])
     tcp_len = (tcp_header[12] >> 4) * 4
     print(tcp_len)
 
     port = unpack('!H', tcp_header[2:4])
-    if our_port == port[0]:
-        flag = True
+    
+    # packet reordering and throw out duplicate packets?
+    if (our_port == port[0]) and (seq_num[0] >= current_ack):
+        correct_pkt = True
     else:
-        flag = False
-
+        correct_pkt = False
+        
+    # construct flags{is_ack:T/F, is_fin:T/F}
+    recv_flags = {'is_ack':False, 'is_fin':False}
+    tcp_flags = tcp_header[13]
+    fin = tcp_flags & 1
+    syn = (tcp_flags >> 1) & 1
+    rst = (tcp_flags >> 2) & 1
+    psh = (tcp_flags >> 3) & 1
+    ack = (tcp_flags >> 4) & 1
+    if ack == 1 and (fin + syn + rst + psh == 0):
+        recv_flags['is_ack'] = True
+    if fin==1:
+        recv_flags['is_fin'] = True
+        
     # TODO is there like a checksum thing i need to do here?
+    print(recv_flags)
 
-    return seq_num[0], ack_num[0], tcp_len, flag;
+    return seq_num[0], ack_num[0], tcp_len, correct_pkt, recv_flags;
 
 
