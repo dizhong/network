@@ -133,7 +133,50 @@ color:#6633CC;
 
 </li>
 
-<IC WEBSITES</h2>
+<li ><a href="press.php">PRESS</a></li>
+
+<li class="dropdown ">
+<a id="drop1" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><span style="color:red">JOIN</span><b class="caret"></b></a>
+<ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+<li role="presentation"><a role="menuitem" tabindex="-1" href="https://david.choffnes.com/join.php#grad">Graduate</a></li>
+<li role="presentation"><a role="menuitem" tabindex="-1" href="https://david.choffnes.com/join.php#ugrad">Undergraduate</a></li>
+</ul>
+</li>
+
+<li ><a href="contact.php">CONTACT</a></li>
+
+</ul>
+</div><!--/.nav-collapse -->
+</div>
+</div>
+</div>
+
+
+
+<div class="container-narrow">
+
+<div id="content">
+
+<div class="section_header">CS 4700 / CS 5700 - Network Fundamentals</div>
+<h2>Project 4: Raw Sockets</h2>
+<p>
+    
+  <b>The final version of the project is due at 11:59pm on Nov. 20, 2020.</b>
+
+            </p><p>
+<h2>Description</h2>
+The goal of this assignment is to familiarize you with the low-level operations of
+the Internet protocol stack. Thus far, you have had experience using sockets and manipulating
+application level protocols. However, working above the operating system's networking
+stack hides all the underlying complexity of creating and managing IP and TCP headers.
+<p></p>
+Your task is to write a program called <i>rawhttpget</i> that takes a URL on the command
+line and downloads the associated file. You may use any HTTP code that you wrote for
+project 2 to aid in the process. However, <b>your program must use an SOCK_STREAM/IPPROTO_RAW socket</b>,
+which means that <b>you</b> are responsible for building the IP and TCP headers in each packet.
+In essence, you will be rebuilding the operating system's TCP/IP stack within your application.
+</p><p>
+<h2>WARNING: DO NOT TEST YOUR PROGRAM ON PUBLIC WEBSITES</h2>
 As with project 2, you should not test your program against public web servers. <b>Only test
 your program against pages hosted by CCIS</b>. When you are testing your program, you will almost
 certainly send packets with invalid IP and TCP headers. These packets may trigger security warnings
@@ -194,7 +237,49 @@ programming. However, <b>not all languages support raw socket programming</b>. S
 you program in Java, I will allow the use of the <a href="http://www.savarese.com/software/rocksaw/">
 RockSaw Library</a>, which enables raw socket programming in Java.
 </p><p>
-When you start to write your program, you will immediately notice that thee on a stock Ubuntu Linux 20.04 machine,
+When you start to write your program, you will immediately notice that the SOCK_STREAM /IPPROTO_IP receive
+socket is <i>promiscuous</i>: it receives <b>all</b> packets that are being sent to your machine,
+regardless of whether they are TCP or UDP, their destination port number, etc. One of your tasks
+will be filtering the incoming packets to isolate the ones that belong to your program. All other
+packets can be ignored by your program.
+</p><p>
+Your program must implement all features of IP packets. This includes validating the checksums of
+incoming packets, and setting the correct version, header length and total length, protocol identifier,
+and checksum in each outgoing packet. Obviously, you will also need to
+correctly set the source and destination IP in each outgoing packet. You may use existing OS APIs to query
+for the IP of the remote HTTP server (i.e. handle DNS requests) as well as the IP of the source
+machine. <b>Be careful that you select the correct IP address of the local machine.</b> Do not bind
+to localhost (127.0.0.1)! Furthermore, your code must be defensive, i.e. you must check the validity of
+IP headers from the remote
+server. Is the remote IP correct? Is the checksum correct? Does the protocol identifier match
+the contents of the encapsulated header?
+</p><p>
+Your code must implement a subset of TCP's functionality. Your program must verify the checksums of
+incoming TCP packets, and generate correct checksums for outgoing packets. Your code must select
+a valid local port to send traffic on, perform the three-way handshake, and correctly handle connection
+teardown. Your code must correctly handle sequence and acknowledgement numbers. Your code may manage the
+advertised window as you see fit. Your code must include
+basic timeout functionality: if a packet is not ACKed within 1 minute, assume the packet is lost and
+retransmit it. Your code must be able to receive out-of-order incoming packets and put them back into
+the correct order before delivering them to the higher-level, HTTP handling code. Your code should
+identify and discard duplicate packets. Finally, your code
+must implement a basic congestion window: your code should start with cwnd=1, and increment the cwnd
+after each succesful ACK, up to a fixed maximum of 1000 (e.g. cwnd must be <=1000 at all times). If
+your program observes a packet drop or a timeout, reset the cwnd to 1.
+</p><p>
+As with IP, your code must be defensive: check to ensure that all incoming packets have valid checksums
+and in-order sequence numbers. If your program does not receive any data from the remote server for three
+minutes, your program can assume that the connection has failed. In this case, your program can simply
+print an error message and close.
+</p><p>
+<h2>Developing Your Program</h2>
+Access to raw sockets requires root privileges on the operating system. Recall that raw sockets are
+promiscuous, i.e. they can observe all packets that arrive at a machine. It would be a security vulnerability
+if any program could open raw sockets, because that would enable you to spy on the network traffic of
+all other users using a shared machine (e.g. one of the CCIS machines).
+</p><p>
+Since we cannot give you root access to the CCIS machines, you will need to develop your program on
+your own Linux machine, or in a VM. We will be grading your code on a stock Ubuntu Linux 20.04 machine,
 so keep that in mind when developing your code and setting up your VM. <b>Do not develop your program
 on Windows or OSX</b>: the APIs for raw sockets on those systems are incompatible with Linux, and thus
 your code will not work when we grade it.
@@ -219,9 +304,7 @@ case, your program is using a raw socket, and thus the kernel has no idea what T
 the kernel will erroneously respond to packets destined for your program with TCP RSTs. You don't want
 the kernel to kill your remote connections, and thus you need to instruct the kernel to drop outgoing
 TCP RST packets. You will need to recreate this rule each time your reboot your machine/VM.
-</
-131f
-p><p>
+</p><p>
 <h2>Debugging</h2>
 Debugging raw socket code can be very challenging. You will need to get comfortable with 
 <a href="http://www.wireshark.org/">Wireshark</a>
@@ -292,12 +375,43 @@ MAC address of the gateway, since this information needs to be included in the E
 implemented Ethernet functionality, and any additional challenges your faced (e.g. ARP).
 </p>
 
-
-4fa
     
     
     </div> <!-- /container -->
     
     <!-- Le javascript
     ================================================== -->
-    <!-- Placed at the end of the document s
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://david.choffnes.com/jquery-latest.js"></script>
+    <script src="https://david.choffnes.com/bootstrap/js/bootstrap.js"></script>
+
+ <script>
+      !function ($) {
+        $(function(){
+          // Fix for dropdowns on mobile devices
+          $('body').on('touchstart.dropdown', '.dropdown-menu', function (e) { 
+              e.stopPropagation(); 
+          });
+          $(document).on('click','.dropdown-menu a',function(){
+              document.location = $(this).attr('href');
+          });
+        })
+      }(window.jQuery)
+    </script>
+
+    <!--script src="https://www.google-analytics.com/urchin.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+    _uacct = "UA-2830907-1";
+    urchinTracker();
+    </script-->
+    </body>
+    <div class="navbar-footer-grey">
+    <hr>
+    <p>David Choffnes, Associate Professor, Khoury College of Computer Sciences, Northeastern University. &copy; 2020<br>
+    Last updated
+    <!-- #BeginDate format:Am1 -->November 10, 2020<!-- #EndDate -->.
+    </p>
+    </div>
+    </html>
+

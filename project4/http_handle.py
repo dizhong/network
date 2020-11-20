@@ -7,7 +7,7 @@ class Read:
     def __init__(self, client):
         self.client = client
         self.byte_buffer = b''
-        self.bufsize = 4069
+        self.bufsize = 20000
 
     # For reading chunks with a known length
     def read_bytes(self, length):
@@ -67,9 +67,11 @@ def get_message(client):
             #if chunk is None:
             #    return response.decode(), {'status':1000}, ""
             response += chunk
-            read_message.read_until(suffix)
-            #print(str(length) + " length of chunk\n")
-            #print(chunk.decode())
+            result_until = read_message.read_until(suffix)
+            print(str(length) + " supposed length of chunk\n")
+            print(str(len(chunk)) + " actual length of chunk\n")
+            #print(result_until)
+            #print(chunk.decode() + "\n\n\n\n\n\n\n\n\n")
     else:
         response = read_message.read_bytes(parsed_header['length'])
     return response.decode(), parsed_header, header.decode()
