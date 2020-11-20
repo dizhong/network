@@ -76,7 +76,7 @@ def tcp_header(source_port, seq, ack_n, window, source_ip, dest_ip, data, flags)
 # i'm just gonna skip the options here cuz what do i use them for?
 # process the tcp header part of a captured packet, excluding options
 # flag is for determining whether this is a packet we're looking for
-def tcp_processing(tcp_header, our_port, current_ack):
+def tcp_processing(tcp_header, our_port, current_ack, total_len, ip_len):
     seq_num = unpack('!L', tcp_header[4:8])
     ack_num = unpack('!L', tcp_header[8:12])
     tcp_len = (tcp_header[12] >> 4) * 4
@@ -98,13 +98,14 @@ def tcp_processing(tcp_header, our_port, current_ack):
     rst = (tcp_flags >> 2) & 1
     psh = (tcp_flags >> 3) & 1
     ack = (tcp_flags >> 4) & 1
-    if ack == 1 and (fin + syn + rst + psh == 0):
+    
+    # uh actually retransmit...? uh what if only header too sleepy fuck life
+    if ((ip_len + tcp_len) == total_len) and (syn != 1):
         recv_flags['is_ack'] = True
-    if fin==1:
+    if fin == 1:
         recv_flags['is_fin'] = True
-        
+
     # TODO is there like a checksum thing i need to do here?
-    print(recv_flags)
 
     return seq_num[0], ack_num[0], tcp_len, correct_pkt, recv_flags;
 

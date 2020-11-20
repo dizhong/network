@@ -41,7 +41,6 @@ class Connection():
         else:
             packet = ip_h + tcp_h + data
             self.tcp_seq = self.tcp_seq + len(data)
-            # does tcp header not consume any # in seq?
 
         self.s_send.sendto(packet, (self.dip, 80))
         
@@ -59,8 +58,6 @@ class Connection():
                 sys.exit()
             self.s_recv.settimeout(None)
             response += chunk
-            if chunk == b'':
-                return None
         self.byte_buffer = response[length:]
         return response[:length]
         
@@ -77,31 +74,36 @@ class Connection():
     def check_pkt(self):
     
         ip_len_byte = self.sock_get_bytes(1)
+        print(ip_len_byte)
         ip_len = (ip_len_byte[0] & 15) * 4
-
+        print(str(ip_len) + " this is length of ip header from check_pkt")
         ip_header = ip_len_byte + self.sock_get_bytes(ip_len - 1)
-        total_len, correct_pkt = ip.ip_processing(ip_header, self.sip, self.dip)
-
-        # if ip_processing tells us this is not a packet we want,
-        # either from checksum or from source/destination ip,
-        # trim the rest of pkt length from buffer and get out
-        if not correct_pkt:
-            trimmed = self.trim_buffer(total_len-ip_len)
-            return False, b'', None
+        total_len, correct_pkt_ip = ip.ip_processing(ip_header, self.sip, self.dip)
+        print(str(total_len) + " this is total_len fro check_pkt")
 
         # if correct, go on to recv the tcp header in a similar way
-        # but we're gonna ignore the options and just read in 24 bytes first
-        tcp_partial_header = self.sock_get_bytes(24)
-        seq_n, ack_n, tcp_len, correct_pkt, flags = tcp.tcp_processing(tcp_partial_header, self.port, self.tcp_ack)
-
+        # but we're gonna ignore the options and just read in 20 bytes first
+        tcp_partial_header = self.sock_get_bytes(20)
+        seq_n, ack_n, tcp_len, correct_pkt_tcp, flags = tcp.tcp_processing(tcp_partial_header, self.port, self.tcp_ack, total_len, ip_len)
+        if (tcp_len > 20):
+            self.trim_buffer(tcp_len-20)
+        print(str(tcp_len) + " this is tcp_len printed in check_pkt")
+        print(correct_pkt_ip)
+        print(correct_pkt_tcp)
+        print(total_len-ip_len-tcp_len)
+        #print("below trimmed")
         #TODO logic for jumping out when incorrect and for updating seq ack
-        if not correct_pkt:
-            self.trim_buffer(total_len-ip_len-tcp_len)
-            return False, b'', None
-        
-        self.tcp_ack = seq_n + 1
-        trimmed = self.trim_buffer(total_len-ip_len-tcp_len)
-        return True, trimmed, flags
+        if (not correct_pkt_ip) or (not correct_pkt_tcp):
+            trimmed = self.trim_buffer(total_len-ip_len-tcp_len)
+            #print(trimmed)
+            #print(self.byte_buffer)
+            return False, b'', None, seq_n, ack_n
+        else:
+            trimmed = self.trim_buffer(total_len-ip_len-tcp_len)
+            #print(trimmed)
+            #print(self.byte_buffer)
+            return True, trimmed, flags, seq_n, ack_n
+
 
 
     # function to get http etc data from the correct pkt
@@ -110,26 +112,28 @@ class Connection():
     
         getting_pkt = False
         data = b''
-        recv_flags = {}
+        #recv_flags = {}
         start_time = time.time()
         elapsed_time = 0
         counter = 0
         while((not getting_pkt) and (elapsed_time < 180) and (len(data) <= 0)):
-            getting_pkt, data, recv_flags = self.check_pkt()
+            getting_pkt, data, recv_flags, seq_n, ack_n = self.check_pkt()
             elapsed_time = time.time() - start_time
             counter = counter + 1
             
         if (elapsed_time >= 180):
             print("exiting program because wait time exceeds 3 minutes")
             sys.exit()
-            
+
         # the only thing to not send ack for is ack only pkts i think
         # probably need a flag for getting fin to tell the main
         print(recv_flags)
+        print("above recv_flags printed from recv")
         if (not recv_flags['is_ack']):
+            self.tcp_ack = seq_n + 1
             ack_flags = {'syn':0, 'ack':1, 'fin':0}
             self.send(ack_flags, b'')
         
         print("after " + str(counter) + " got one?")
-        return data
+        return data, recv_flags['is_fin']
         

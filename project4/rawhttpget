@@ -8,7 +8,7 @@ from connection import Connection
 import ip_handle as ip
 import tcp_handle as tcp
 import http_handle as http
-
+import random
 
 
 def create_connection(dest_ip):
@@ -28,8 +28,10 @@ def create_connection(dest_ip):
 
     source_ip = ni.ifaddresses('ens33')[ni.AF_INET][0]['addr']
     # and find a valid port to send (just uses socket.connect)
-    s_send.bind((source_ip, 0))
-    source_port = s_send.getsockname()[1]
+    #s_send.bind((source_ip, 0))
+    #source_port = s_send.getsockname()[1]
+    
+    source_port = random.randrange(5000, 60000)
 
     conn = Connection(source_ip, dest_ip, source_port, s_send, s_recv)
 
@@ -55,9 +57,6 @@ def main():
     conn.send(tcp_flags, b'')
 
     conn.recv(4069)
-    # send the ack packet to establish handshake--actually handled by recv
-    # tcp_flags = {'syn':0, 'ack':1, 'fin':0}
-    # conn.send(tcp_flags, b'')
 
     # now send the http request
     tcp_flags = {'syn':0, 'ack':1, 'fin':0}
