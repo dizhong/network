@@ -11,7 +11,8 @@ import http_handle as http
 import random
 
 
-def create_connection(dest_ip):
+def create_connection(dest_ip, log):
+    
     # create a new send socket with SOCK_RAW/IPPROTO_RAW
     try:
         s_send = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
@@ -33,7 +34,7 @@ def create_connection(dest_ip):
     
     source_port = random.randrange(5000, 60000)
 
-    conn = Connection(source_ip, dest_ip, source_port, s_send, s_recv)
+    conn = Connection(source_ip, dest_ip, source_port, s_send, s_recv, log)
 
     return conn
 
@@ -49,14 +50,16 @@ def main():
     if file_name == '':
         file_name = 'index.html'
     print(file_name + " is file name\n")
+    
+    log = open("logfile.txt", 'w')
 
-    conn = create_connection(dest_ip)
+    conn = create_connection(dest_ip, log)
 
     # send the syn packet to start the connection
     tcp_flags = {'syn':1, 'ack':0, 'fin':0}
     conn.send(tcp_flags, b'')
 
-    conn.recv(4069)
+    conn.recv_pkt(4069)
 
     # now send the http request
     tcp_flags = {'syn':0, 'ack':1, 'fin':0}
@@ -66,15 +69,21 @@ def main():
         data = data + b'0'
     conn.send(tcp_flags, data)
 
+
+    # and receive the actual file i guess
+    #response = http.get_message(conn)
+    #f = open(file_name, 'w')
+    #f.write(response[0])
+    #f.close()
+    
+    while len(conn.recv(6000)) > 0:
+        pass
+        
     # and then close the connection on our side
     tcp_flags = {'syn':0, 'ack':1, 'fin':1}
     conn.send(tcp_flags, b'')
-
-    # and receive the actual file i guess
-    response = http.get_message(conn)
-    f = open(file_name, 'w')
-    f.write(response)
-    f.close()
+        
+    log.close()
  
 
 

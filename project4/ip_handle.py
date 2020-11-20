@@ -48,10 +48,10 @@ def ip_processing(ip_header, our_ip, server_ip):
     total_length = unpack('!H', ip_header[2:4])
     correct_flg = False
     ip_id = unpack('!H', ip_header[4:6])
-    print(str(len(ip_header)) + " this is length of ip header printed from ip_proc")
-    print(ip_header)
+    #print(str(len(ip_header)) + " this is length of ip header printed from ip_proc")
+    #print(ip_header)
     #print(str(ip_header[12:20]) + " this is uhh source_addr + dext_addr")
-    print(str(ip_id[0]) + " this is ip_id")
+    #print(str(ip_id[0]) + " this is ip_id")
     # TODO check if source_ip and dest_ip is what we want,
     # notice that it is flipped from the source and dest we get
     addr = unpack('!4s4s', ip_header[12:20])

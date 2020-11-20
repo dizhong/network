@@ -13,9 +13,9 @@ class Read:
     def read_bytes(self, length):
         response = self.byte_buffer
         while (len(response) < length):
-            chunk, is_fin = self.client.recv(self.bufsize)
+            chunk = self.client.recv(self.bufsize)
             response += chunk
-            if chunk == b'' and is_fin == True:
+            if chunk == b'':
                 return None
         self.byte_buffer = response[length:]
         return response[:length]
@@ -24,9 +24,9 @@ class Read:
     def read_until(self, suffix):
         response = self.byte_buffer
         while not (suffix in response):
-            chunk, is_fin = self.client.recv(self.bufsize)
+            chunk = self.client.recv(self.bufsize)
             response += chunk
-            if chunk == b'' and is_fin == True:
+            if chunk == b'':
                 return None
         split = response.split(suffix, 1)
         if len(split) > 1:
@@ -34,10 +34,7 @@ class Read:
         else:
             self.byte_buffer = b''
         return split[0] 
-
-
-
-
+        
 # get the response message 
 # input: client
 # output: String body, Dict parsed_header, String header
@@ -48,35 +45,35 @@ def get_message(client):
     header = read_message.read_until(suffix)
     response = b''
     if header is None:
-        return ""
+        return "", {'status':1000}, ""
     parsed_header = response_header_parse(header.decode())
+    #print(header.decode())
+    #get chunks in a loop
     if parsed_header['chunked'] == True:
         chunk = b''
         suffix = b'\r\n'
         length = True
         #length = read_message.read_until(suffix)
-        #get chunks in a loop
         while length != 0:
             length = read_message.read_until(suffix)
             if length is None:
-                return ""
+                return "", {'status':1000}, ""
             elif length == b'':
                 break;
             length = length.decode()
             length = length.split(";")[0]
             length = int(length, 16)
             chunk = read_message.read_bytes(length)
+            if chunk is None:
+                return response.decode(), {'status':1000}, ""
             response += chunk
             read_message.read_until(suffix)
             #print(str(length) + " length of chunk\n")
             #print(chunk.decode())
     else:
-        #get response when not chunked
         response = read_message.read_bytes(parsed_header['length'])
-        
-    return response.decode()
-    
-
+    return response.decode(), parsed_header, header.decode()
+    #get response when not chunked
 
 # split by \r\n into list, then split list[0] by space
 # find status_num, then parse by different num
@@ -126,7 +123,6 @@ def response_header_parse(header):
             if "chunked" in line[1]:
                 chunked = True
         
-
     parsed_header = {'status':status_num, 'url':url, 'cookie':cookies, 'csrf':csrf, 'chunked':chunked, 'length':length}
     return parsed_header 
 
@@ -140,5 +136,4 @@ def http_get(file_path, host_name):
              #"Cookie:" + cookie + "\r\n\r\n"
              # "X-CSRFTOKEN:" + csrf + "\r\n\r\n"
     return request
-
 

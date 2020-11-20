@@ -80,7 +80,7 @@ def tcp_processing(tcp_header, our_port, current_ack, total_len, ip_len):
     seq_num = unpack('!L', tcp_header[4:8])
     ack_num = unpack('!L', tcp_header[8:12])
     tcp_len = (tcp_header[12] >> 4) * 4
-    print(tcp_len)
+    #print(tcp_len)
 
     port = unpack('!H', tcp_header[2:4])
     
@@ -91,7 +91,7 @@ def tcp_processing(tcp_header, our_port, current_ack, total_len, ip_len):
         correct_pkt = False
         
     # construct flags{is_ack:T/F, is_fin:T/F}
-    recv_flags = {'is_ack':False, 'is_fin':False}
+    recv_flags = {'is_ack':False, 'is_fin':False, 'is_syn': False}
     tcp_flags = tcp_header[13]
     fin = tcp_flags & 1
     syn = (tcp_flags >> 1) & 1
@@ -100,10 +100,12 @@ def tcp_processing(tcp_header, our_port, current_ack, total_len, ip_len):
     ack = (tcp_flags >> 4) & 1
     
     # uh actually retransmit...? uh what if only header too sleepy fuck life
-    if ((ip_len + tcp_len) == total_len) and (syn != 1):
+    if ((ip_len + tcp_len) == total_len) and (syn != 1) and (fin != 1):
         recv_flags['is_ack'] = True
     if fin == 1:
         recv_flags['is_fin'] = True
+    if syn == 1:
+        recv_flags['is_syn'] = True
 
     # TODO is there like a checksum thing i need to do here?
 
