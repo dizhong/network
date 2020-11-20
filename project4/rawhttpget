@@ -49,9 +49,9 @@ def main():
     file_name = dest_url.split("//")[1].split("/")[-1]
     if file_name == '':
         file_name = 'index.html'
-    print(file_name + " is file name\n")
+    #print(file_name + " is file name\n")
     
-    log = open("logfile.txt", 'w')
+    log = open("logfile.txt", 'wb')
 
     conn = create_connection(dest_ip, log)
 
@@ -71,7 +71,7 @@ def main():
 
     # and receive the actual file i guess
     response = http.get_message(conn)
-    f = open(file_name, 'w')
+    f = open(file_name, 'wb')
     f.write(response[0])
     f.close()
     
@@ -89,3 +89,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+    
+    

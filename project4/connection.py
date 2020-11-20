@@ -93,8 +93,8 @@ class Connection():
         #print(correct_pkt_ip)
         #print(correct_pkt_tcp)
         payload_len = total_len-ip_len-tcp_len
-        print("Sequence numbe: " + str(seq_n))
-        print("Payload length: " + str(payload_len))
+        #print("Sequence numbe: " + str(seq_n))
+        #print("Payload length: " + str(payload_len))
         #print("below trimmed")
         #TODO logic for jumping out when incorrect and for updating seq ack
         if (not correct_pkt_ip) or (not correct_pkt_tcp):
@@ -148,7 +148,7 @@ class Connection():
             self.send(ack_flags, b'')
         
         #print("after " + str(counter) + " got one?")
-        print("Real payload length: " + str(len(data)) + "\n")
+        #print("Real payload length: " + str(len(data)) + "\n")
         return data
         
         
@@ -162,7 +162,7 @@ class Connection():
             data = self.recv_pkt(bufsize)
             chunk += data
             
-        self.f_handle.write(chunk.decode())
+        self.f_handle.write(chunk)
         return chunk
         
         
