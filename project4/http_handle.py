@@ -64,8 +64,8 @@ def get_message(client):
             length = length.split(";")[0]
             length = int(length, 16)
             chunk = read_message.read_bytes(length)
-            if chunk is None:
-                return response.decode(), {'status':1000}, ""
+            #if chunk is None:
+            #    return response.decode(), {'status':1000}, ""
             response += chunk
             read_message.read_until(suffix)
             #print(str(length) + " length of chunk\n")

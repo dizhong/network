@@ -65,23 +65,23 @@ def main():
     tcp_flags = {'syn':0, 'ack':1, 'fin':0}
     data = http.http_get(file_path, host_name)
     data = data.encode()
-    if len(data) % 2 == 1:
-        data = data + b'0'
+    #if len(data) % 2 == 1:
+    #    data = data + b'0'
     conn.send(tcp_flags, data)
 
-
     # and receive the actual file i guess
-    #response = http.get_message(conn)
-    #f = open(file_name, 'w')
-    #f.write(response[0])
-    #f.close()
+    response = http.get_message(conn)
+    f = open(file_name, 'w')
+    f.write(response[0])
+    f.close()
     
-    while len(conn.recv(6000)) > 0:
-        pass
+    #while len(conn.recv(6000)) > 0:
+    #    pass
         
     # and then close the connection on our side
     tcp_flags = {'syn':0, 'ack':1, 'fin':1}
     conn.send(tcp_flags, b'')
+
         
     log.close()
  
