@@ -55,8 +55,12 @@ def main():
     dest_url = sys.argv[1]
     host_name = dest_url.split("//")[1].split("/")[0]
     if (len(dest_url.split("//")[1].split("/")) > 1):
-        file_path = dest_url.split("//")[1].split("/", 1)[1]
-        file_name = dest_url.split("//")[1].split("/")[-1]
+        if dest_url.endswith('/'):
+            file_path = dest_url.split("//")[1].split("/", 1)[1]
+            file_name = 'index.html'
+        else:
+            file_path = dest_url.split("//")[1].split("/", 1)[1]
+            file_name = dest_url.split("//")[1].split("/")[-1]
     else:
         file_name = 'index.html'
         file_path = '/'
