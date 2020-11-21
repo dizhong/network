@@ -34,11 +34,11 @@ def create_connection(dest_ip):
 
     source_ip = ni.ifaddresses('ens33')[ni.AF_INET][0]['addr']
     # and find a valid port to send (just uses socket.bind and let system figure this out)
-    s_send.bind((source_ip, 0))
-    source_port = s_send.getsockname()[1]
+    #s_send.bind((source_ip, 0))
+    #source_port = s_send.getsockname()[1]
 
     # getting a random big port, for testing
-    #source_port = random.randrange(5000, 60000)
+    source_port = random.randrange(5000, 60000)
 
     conn = Connection(source_ip, dest_ip, source_port, s_send, s_recv)
 
@@ -54,14 +54,15 @@ def main():
     # get download url from args and get ip and split out/create file name
     dest_url = sys.argv[1]
     host_name = dest_url.split("//")[1].split("/")[0]
-    file_path = dest_url.split("//")[1].split("/", 1)[1]
-    dest_ip = socket.gethostbyname(host_name)
-    file_name = dest_url.split("//")[1].split("/")[-1]
-    if file_name == '':
+    if (len(dest_url.split("//")[1].split("/")) > 1):
+        file_path = dest_url.split("//")[1].split("/", 1)[1]
+        file_name = dest_url.split("//")[1].split("/")[-1]
+    else:
         file_name = 'index.html'
+        file_path = '/'
     #print(file_name + " is file name\n")
     
-
+    dest_ip = socket.gethostbyname(host_name)
     conn = create_connection(dest_ip)
 
     # send the syn packet to start the connection
