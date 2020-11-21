@@ -10,8 +10,13 @@ import tcp_handle as tcp
 import http_handle as http
 import random
 
-
-def create_connection(dest_ip, log):
+# This function handles the creation of connection, namely creating the raw sockets
+# for sending and the (less raw) socket for receving, handle all the necessary ip
+# addresses and port for sending stuff, and create an instance of the 
+# connection class that takes the two sockets.
+# INPUT: dest_ip
+# RETURN: Connection conn (an instance of the connection class defined in connection.py)
+def create_connection(dest_ip):
     
     # create a new send socket with SOCK_RAW/IPPROTO_RAW
     try:
@@ -28,18 +33,23 @@ def create_connection(dest_ip, log):
         sys.exit()
 
     source_ip = ni.ifaddresses('ens33')[ni.AF_INET][0]['addr']
-    # and find a valid port to send (just uses socket.connect)
-    #s_send.bind((source_ip, 0))
-    #source_port = s_send.getsockname()[1]
-    
-    source_port = random.randrange(5000, 60000)
+    # and find a valid port to send (just uses socket.bind and let system figure this out)
+    s_send.bind((source_ip, 0))
+    source_port = s_send.getsockname()[1]
 
-    conn = Connection(source_ip, dest_ip, source_port, s_send, s_recv, log)
+    # getting a random big port, for testing
+    #source_port = random.randrange(5000, 60000)
+
+    conn = Connection(source_ip, dest_ip, source_port, s_send, s_recv)
 
     return conn
 
 
-
+# the function for handling the main logic of this homework.
+# namely it handles the url from command line, figures out what the download
+# name and ip addresses should be, create connection, establish handshake,
+# send http get, then start receiving data, and then finally open a file and
+# writes the received data in.
 def main():
     # get download url from args and get ip and split out/create file name
     dest_url = sys.argv[1]
@@ -51,9 +61,8 @@ def main():
         file_name = 'index.html'
     #print(file_name + " is file name\n")
     
-    log = open("logfile.txt", 'wb')
 
-    conn = create_connection(dest_ip, log)
+    conn = create_connection(dest_ip)
 
     # send the syn packet to start the connection
     tcp_flags = {'syn':1, 'ack':0, 'fin':0}
@@ -83,7 +92,6 @@ def main():
     conn.send(tcp_flags, b'')
 
         
-    log.close()
  
 
 

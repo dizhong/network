@@ -8,9 +8,19 @@ import random
 import time
 
 
+# This file basically tries to mimic the actual socket in python.
+# The connection class maintains a lot of states relevant to the TCP connection,
+# and has a number of functions including send() and recv() that mostly tries to do
+# what socket.send() and socket.recv() does in python, though not exactly the same.
+# The most important difference is that 3-way handshake is implemented with send() 
+# and recv_pkt(), which is I think different from what python socket automatically does?
+# The actual handling of tcp and http headers are in tcp_handle.py and ip_handle.py
+# respectively.
+
+
 class Connection():
 
-    def __init__(self, source_ip, dest_ip, source_port, s_send, s_recv, f):
+    def __init__(self, source_ip, dest_ip, source_port, s_send, s_recv):
         self.sip = source_ip
         self.dip = dest_ip
         self.port = source_port
@@ -26,12 +36,13 @@ class Connection():
         
         self.byte_buffer = b''
         self.recvsize = 4069
-        self.f_handle = f
 
 
     # tcp_flags is a list of [syn, ack, fin]
     # data is http data in byte format
-    # if any of the tcp flag is set, don't append data
+    # if syn flag is set, don't append data
+    # INPUT: Dictionary tcp_flags{'syn':0|1, 'fin':0|1, 'ack':0|1}, Byte data
+    # RETURN: None
     def send(self, tcp_flags, data):
         ip_h = ip.ip_header(self.ip_count, self.sip, self.dip)
         self.ip_count += 1
@@ -49,6 +60,13 @@ class Connection():
         return
 
 
+    # This function receives unprocessed bytes from the socket.recv() function
+    # built in in python, then returns the requested length of bytes for the
+    # next layer to process. Because the number of bytes socket.recv() gets is
+    # undeterministic, potential excess bytes are stored in the byte buffer of the
+    # class for next time this function is called
+    # INPUT: Int length
+    # RETURN: Byte response (len(response) == length)
     def sock_get_bytes(self, length):
         response = self.byte_buffer
         while (len(response) < length):
@@ -89,23 +107,12 @@ class Connection():
         seq_n, ack_n, tcp_len, correct_pkt_tcp, flags = tcp.tcp_processing(tcp_partial_header, self.port, self.tcp_ack, total_len, ip_len)
         if (tcp_len > 20):
             self.trim_buffer(tcp_len-20)
-        #print(str(tcp_len) + " this is tcp_len printed in check_pkt")
-        #print(correct_pkt_ip)
-        #print(correct_pkt_tcp)
         payload_len = total_len-ip_len-tcp_len
-        #print("Sequence numbe: " + str(seq_n))
-        #print("Payload length: " + str(payload_len))
-        #print("below trimmed")
-        #TODO logic for jumping out when incorrect and for updating seq ack
         if (not correct_pkt_ip) or (not correct_pkt_tcp):
             trimmed = self.trim_buffer(payload_len)
-            #print(trimmed)
-            #print(self.byte_buffer)
             return False, b'', None, seq_n, ack_n, payload_len
         else:
             trimmed = self.trim_buffer(payload_len)
-            #print(trimmed)
-            #print(self.byte_buffer)
             return True, trimmed, flags, seq_n, ack_n, payload_len
 
 
@@ -153,6 +160,7 @@ class Connection():
         
         
     # only use once 3-way handshake has been established
+    # INPUT: Int bufsize
     # Return: Byte data (<= len(bufsize))
     #         if len(data) == 0: connection has received fin flag and there is
     #                            no more old data to send
@@ -162,7 +170,6 @@ class Connection():
             data = self.recv_pkt(bufsize)
             chunk += data
             
-        self.f_handle.write(chunk)
         return chunk
         
         

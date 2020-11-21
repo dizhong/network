@@ -2,6 +2,9 @@ import socket, sys, time, random
 from struct import *
 import netifaces as ni
 
+# This is the file that handles TCP header creation and parsing and checking the
+# TCP header for received incoming packets.
+
 # method for calculating checksum
 def checksum(msg):
     sumN = 0
@@ -106,8 +109,6 @@ def tcp_processing(tcp_header, our_port, current_ack, total_len, ip_len):
         recv_flags['is_fin'] = True
     if syn == 1:
         recv_flags['is_syn'] = True
-
-    # TODO is there like a checksum thing i need to do here?
 
     return seq_num[0], ack_num[0], tcp_len, correct_pkt, recv_flags;
 

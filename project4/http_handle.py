@@ -1,6 +1,11 @@
 
 import socket, sys
 
+# The code for handling HTTP layer stuff, stripping out HTTP 
+# header and handle chunked encoding etc, basically reused code
+# from webcrawler.
+
+
 
 #a class for reading in the response
 class Read:
@@ -64,14 +69,8 @@ def get_message(client):
             length = length.split(";")[0]
             length = int(length, 16)
             chunk = read_message.read_bytes(length)
-            #if chunk is None:
-            #    return response.decode(), {'status':1000}, ""
             response += chunk
             result_until = read_message.read_until(suffix)
-            #print(str(length) + " supposed length of chunk\n")
-            #print(str(len(chunk)) + " actual length of chunk\n")
-            #print(result_until)
-            #print(chunk.decode() + "\n\n\n\n\n\n\n\n\n")
     else:
         response = read_message.read_bytes(parsed_header['length'])
     return response, parsed_header, header.decode()

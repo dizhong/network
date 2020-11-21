@@ -1,2 +1,2 @@
 all: rawhttpget
-	chmod u+s rawhttpget
+	chmod 755 rawhttpget
