@@ -14,6 +14,9 @@ TCP/IP features:
 
 Implemented functions for composting TCP header and IP header respectively. Made sure of correct sequence numbers and acks. Handles TCP connection setup and teardown. Looks at packet headers and filter out the ones that do not belong to the current connection. Has timeout for when server stops responding. Only acks for the packets that need to be acked (aka all the packets other than the ack-only ones).
 
+Setts the correct version, header length and total length, protocol identifier, and checksum in each outgoing packet. Correctly sets the source and destination IP in each outgoing packet. Uses existing OS APIs to query for the IP of the remote HTTP server as well as the IP of the source machine. Selects the correct IP address of the local machine. Checks the validity of IP headers from the remote server. 
+Generates correct checksums for outgoing packets. Selects a valid local port to send traffic on, perform the three-way handshake, and correctly handle connection teardown. Your code must correctly handle sequence and acknowledgement numbers. Make sure packts are in correct order before delivering them to the higher-level, HTTP handling code. Identifies and discards duplicate packets.
+
 
 
 Challenges:
