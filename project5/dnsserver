@@ -1,3 +1,37 @@
 #!/usr/bin/env python3
+import socket
+import sys
 
-if len(sys.argv) == 
+
+
+def main():
+    # actually, the name here is confusing, isn't that something the 
+    # client request give to me???
+    if len(sys.argv) == 3:
+        parser = argparse.ArgumentParser(description="get port and name")
+        parser.add_argument('-p', action='store')
+        parser.add_argument('-n', action='store')
+        args = parser.parse_args()
+        args = vars(args)
+        PORT = int(args['p'])
+        NAME = args['n']
+    else:
+        print("Run like: ./dnsserver -p [port] -n [name]")
+        sys.exit()
+
+    # create a udp socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    source_ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
+    sock.bind(source_ip, PORT)
+
+    while True:
+        data, addr = sock.recvfrom(1024)
+        print("received message: %s" % data)
+        print("from: %s\n" % addr)
+        #send back a udp packet containing ip addr
+    
+
+
+
+if __name__ == "__main__":
+    main()
