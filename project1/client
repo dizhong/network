@@ -1,0 +1,112 @@
+#!/usr/bin/env python
+
+# A simple client for receiving message, calculating the equation in the message,
+# return the answer, etc.
+
+# (do i use a class approach or function approach? do I strip the main while loop
+# outside of the main() function?
+
+import socket, argparse, ssl
+
+# helper function for parsing messsages from server
+# input: message from server
+# output: list of strings, [TYPE_OF_MSG, ...]
+# TYPE_OF_MSG = STATUS|BYE
+def parse_message(chunk):
+    parsed_message = []
+    #get rid of the cs5200fall2020
+    split_chunk = (chunk.split(' ', 1))[1]
+    if "BYE" in split_chunk:
+        parsed_message.append('BYE')
+        parsed_message.append(split_chunk.split(' ')[0])
+    elif "STATUS" in split_chunk:
+        parsed_message = split_chunk.split(' ')
+    else:
+        assert(False), 'something went wrong in message type' + chunk
+
+    return parsed_message
+
+# helper function for composting a SOLUTION message, using eval to calculate
+# input: a list for a function to be computed
+# output: composed message (in binary or string form?)
+def solution_message(function):
+    result = None
+    if (function[1] == '+'):
+        result = int(function[0]) + int(function[2])
+    elif (function[1] == '-'):
+        result = int(function[0]) - int(function[2])
+    elif (function[1] == '*'):
+        result = int(function[0]) * int(function[2])
+    elif (function[1] == '/'):
+        result = int(function[0]) // int(function[2])
+    else:
+        assert(False), 'calculation cannot go on ' + ' '.join(function)
+    return 'cs5700fall2020 ' + str(result) + '\n'
+
+#receive with a while loop, by chunks
+#def sock_receive():
+#    return
+
+# the main body to start the program
+def main():
+    parser = argparse.ArgumentParser(description="get host, port(opt), nuid")
+    parser.add_argument('-p', action='store')
+    parser.add_argument('-s', action='store_true')
+    parser.add_argument('hostname', action='store')
+    parser.add_argument('nuid', action='store')
+    args = parser.parse_args()
+    args = vars(args)
+    HOST = args['hostname']
+    if args['p']:
+       PORT = int(args['p'])
+    else:
+       PORT = 27995
+    NUID = args['nuid']
+
+    #create a socket
+    temp_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    #determine wether ssl was requested
+    if (args['s'] == True):
+        sock = ssl.wrap_socket(temp_sock)
+    else:
+        sock = temp_sock
+
+    #connect the socket with cs5700fa20.ccs.neu.edu
+    sock.connect((HOST, PORT))
+
+    #send the HELLO mesage
+    hello = "cs5700fall2020 HELLO " + NUID + "\n"
+    sock.sendall(hello.encode())
+    #print(hello.encode())
+
+    #enter a communication loop
+    opened = True
+    bufsize = 2048
+    while(opened):
+        chunk = ""
+        suffix = "\n"
+        #block and receive until a line break
+        while not (chunk.endswith(suffix)):
+            temp = sock.recv(bufsize)
+            temp1 = temp.decode()
+            chunk += temp1
+            #print(temp)
+        
+        parsed_message = parse_message(chunk)
+        #detect BYE and close connection and print flag
+        if (parsed_message[0] == 'BYE'):
+            sock.close()
+            opened = False
+            print(parsed_message[1])
+        #detect STATUS and calculate function and send solution
+        elif (parsed_message[0] == 'STATUS'):
+            solution = solution_message(parsed_message[1:])
+            sock.send(solution.encode())
+        #something went wrong and print error msg
+        else:
+            assert(False), "something went wrong in message type"
+
+
+if __name__ == "__main__":
+    main()

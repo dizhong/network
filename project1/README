@@ -1,0 +1,9 @@
+Approach:
+The program takes 4 parameters, 2 of which optional, to determine the server, port, student nuid and whether to use ssl-wrapped socket. most of the program body is in the main function, with a few helper functions that extracts the parsing bits of the program out.
+
+Challenges:
+I've forgotten all about sockets so I had to read the two textbooks provided for a bit.
+When doing the SSL portion of homework, because I was using python verion 2.7 interpreter at first and the documentation for 2.7 ssl seemed very deprecated, I decided to switch to python 3 interpreter. And because initially I was using eval to evaluate the result of the status functions instead of parsing it myself, and the division in eval works differently between python 2.7 and python 3 (python 3 eval division returns floating-point numbers), the program I had working perfectly suddenly seemed broken, and it took me quite a while to debug that.
+
+Test:
+I tested my code by passing it neither of the optional parameters, or only one of it, connecting to the provided server. Of the few dozen times I've tested it, it seems like there has been no corrupted message from the server for me to test my error assertion portion yet.
