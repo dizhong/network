@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 import socket
 import sys
+import argparse
 
-
+import dns.message
+import dns.resolver
 
 def main():
     # actually, the name here is confusing, isn't that something the 
     # client request give to me???
-    if len(sys.argv) == 3:
+    if len(sys.argv) == 5:
         parser = argparse.ArgumentParser(description="get port and name")
         parser.add_argument('-p', action='store')
         parser.add_argument('-n', action='store')
@@ -21,17 +23,41 @@ def main():
 
     # create a udp socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    source_ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
-    sock.bind(source_ip, PORT)
+    HOST = socket.gethostbyname(socket.gethostname())
+    print(HOST)
+    print(PORT)
+    sock.bind((HOST, PORT))
+
+    # resolve randomly (hand-)selected http server ip
+    resolver = dns.resolver.Resolver()
+    host = "ec2-34-238-192-84.compute-1.amazonaws.com"
+    resolver_response = resolver.query(host)
+    ip = resolver_response.response.answer[0][0].address
 
     while True:
         data, addr = sock.recvfrom(1024)
-        print("received message: %s" % data)
-        print("from: %s\n" % addr)
-        #send back a udp packet containing ip addr
-    
+        req = dns.message.from_wire(data)
+
+        # Construct IN A response
+        rdata = dns.rdtypes.IN.A.A(
+          dns.rdataclass.IN,
+          dns.rdatatype.A,
+          ip
+        )
+
+        rdataset = dns.rrset.from_rdata_list(
+          "cs5700cdn.example.com.",
+          50,
+          [rdata]
+        )
+
+        resp = dns.message.make_response(req)
+        resp.answer = [rdataset]
+        resp.flags = resp.flags | dns.flags.AA
+        resp_bytes = resp.to_wire()
 
 
-
+        sock.sendto(resp_bytes, addr)
+        
 if __name__ == "__main__":
     main()

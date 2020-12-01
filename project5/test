@@ -1,0 +1,17 @@
+#!/bin/bash
+
+PORT="$1"
+
+function handle_sigint()
+{
+    for proc in `jobs -p`
+    do
+        kill $proc
+    done
+}
+
+trap handle_sigint SIGINT
+
+./dnsserver -p $PORT -n cs5700cdn.example.com &
+dig @129.10.117.187 -p $PORT cs5700cdn.example.com
+wait
