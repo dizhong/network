@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-import socket
 import sys
 import argparse
+import requests
+import http.server
 
 # downloading from server
 
