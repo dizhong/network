@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+import socket
+import sys
+import argparse
+
+# downloading from server
+
+# talking to client
+
+# manage stored files
+#   might read file on disk with most popular content, download 'till we have ~10MB
+
+def main():
+    if len(sys.argv) == 5:
+        parser = argparse.ArgumentParser(description="get port and origin server")
+        parser.add_argument('-p', action='store')
+        parser.add_argument('-o', action='store')
+        args = parser.parse_args()
+        args = vars(args)
+        PORT = int(args['p'])
+        ORIGIN = args['o']
+    else:
+        print("Run like: ./httpserver -p [port] -o [origin]")
+        sys.exit()
+
+if __name__ == "__main__":
+    main()
