@@ -10,14 +10,20 @@ import csv
 cached_paths = {}
 
 def make_handler_class(origin):
-    class HTTPRequestHandler(BaseHTTPRequestHandler):
+    class HTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         def do_GET(self):
             print(self.path)
             if self.path in cached_paths:
-                self.send_response(200, cached_paths[self.path])
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(cached_paths[self.path])
+                print("in cache")
             else:
                 r = requests.get("http://" + origin + ":8080" + self.path)
-                self.send_response(r.status_code, r.content)
+                self.send_response(r.status_code)
+                self.end_headers()
+                self.wfile.write(r.content)
+                print("from origin")
 
     return HTTPRequestHandler
             
@@ -35,9 +41,10 @@ def cache_files(filename, origin):
         cached_paths[page_name] = r.content
         cache_size += len(r.content)
 
-        if cache_size >= 9000000:
+        if cache_size >= 8000000:
             break
 
+    print("cache loaded")
     f.close()
 
 
