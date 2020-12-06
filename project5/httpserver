@@ -4,13 +4,42 @@ import sys
 import argparse
 import requests
 import http.server
+import csv
 
-# downloading from server
 
-# talking to client
+cached_paths = {}
+
+def make_handler_class(origin):
+    class HTTPRequestHandler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            print(self.path)
+            if self.path in cached_paths:
+                self.send_response(200, cached_paths[self.path])
+            else:
+                r = requests.get("http://" + origin + ":8080" + self.path)
+                self.send_response(r.status_code, r.content)
+
+    return HTTPRequestHandler
+            
 
 # manage stored files
-#   might read file on disk with most popular content, download 'till we have ~10MB
+#   might read file on disk with most popular content, download 'till we have ~9MB
+def cache_files(filename, origin):
+    f = open(filename, 'r')
+    line_reader = csv.reader(f)
+    cache_size = 0
+    for line in line_reader:
+        path = line[0]
+        page_name = path[len("https://en.wikipedia.org"):]
+        r = requests.get("http://" + origin + ":8080" + page_name)
+        cached_paths[page_name] = r.content
+        cache_size += len(r.content)
+
+        if cache_size >= 9000000:
+            break
+
+    f.close()
+
 
 def main():
     if len(sys.argv) == 5:
@@ -24,6 +53,14 @@ def main():
     else:
         print("Run like: ./httpserver -p [port] -o [origin]")
         sys.exit()
+
+
+    cache_files("popular_pages_20201130.csv", ORIGIN)
+
+    server_address = ('0.0.0.0', PORT)
+    http_listen = http.server.HTTPServer(server_address, make_handler_class(ORIGIN))
+    http_listen.serve_forever()
+
 
 if __name__ == "__main__":
     main()
