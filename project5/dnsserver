@@ -76,6 +76,7 @@ def main():
 
 
         sock.sendto(resp_bytes, addr)
+        print("responded to 1 query")
         
 if __name__ == "__main__":
     main()

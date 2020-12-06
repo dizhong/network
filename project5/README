@@ -1,5 +1,8 @@
 High-level approach
 
+The dnsserver responds to queries by returning a randomly selected ip from its list of available ips.
+The httpserver caches ~8 or 9 mbs of web pages selected from the top of most popular web pages list, and when it gets a get request, check if the url in the request is in the list of cached urls. if not, it sends a http request to origin to fetch for the content, then send that message along with status code from origin server back to the client. if the server doesn't host the requested page and return 404, the client will get 404.
+
 
 
 Performance enhancing techniques
@@ -9,7 +12,10 @@ Dns server returns a random server.
 For httpserver, the only thing I'm doing that's relevant to performance enhancing is that the http client caches ~9mbs of webpages from urls at the top of the popularity list, which is submitted along with my code files in this milestone because the httpserver needs to read it for caching.
 
 
+
 Challenges
 
 The dnspython library is extremely hard to use. I feel like I spent at least about as much time figuring it out as I would've if I did't use it. 
-Other than that, it's surprisingly challenging to realize python has libraries for http stuff that I can use, since I had to implement the http logic myself in all previous homeworks. Though the http.server library was not the most sraightforward either, I started by accidentally putting the entire web page in the header.
+Other than that, it's surprisingly challenging to realize python has libraries for http stuff that I can use, since I had to implement the http logic myself in all previous homeworks. Though the http.server library was not the most sraightforward either, I started by accidentally putting the entire web page for the response in the header.
+
+
