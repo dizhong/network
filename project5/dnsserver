@@ -2,9 +2,19 @@
 import socket
 import sys
 import argparse
+import random
 
 import dns.message
 import dns.resolver
+
+def find_ip_list(host_list):
+    ip_list = []
+    for host in host_list:
+        resolver = dns.resolver.Resolver()
+        resolver_response = resolver.query(host)
+        ip = resolver_response.response.answer[0][0].address
+        ip_list.append(ip)
+    return ip_list
 
 def main():
     if len(sys.argv) == 5:
@@ -31,12 +41,22 @@ def main():
     host = "ec2-34-238-192-84.compute-1.amazonaws.com"
     resolver_response = resolver.query(host)
     ip = resolver_response.response.answer[0][0].address
+    
+    # hard code list of available servers just cuz
+    host_list = ["ec2-34-238-192-84.compute-1.amazonaws.com",
+                 "ec2-13-231-206-182.ap-northeast-1.compute.amazonaws.com",
+                 "ec2-13-239-22-118.ap-southeast-2.compute.amazonaws.com",
+                 "ec2-34-248-209-79.eu-west-1.compute.amazonaws.com",
+                 "ec2-18-231-122-62.sa-east-1.compute.amazonaws.com",
+                 "ec2-3-101-37-125.us-west-1.compute.amazonaws.com"]
+    ip_list = find_ip_list(host_list)
 
     while True:
         data, addr = sock.recvfrom(1024)
         req = dns.message.from_wire(data)
 
         # Construct IN A response
+        ip = ip_list[random.randint(0, 5)]
         rdata = dns.rdtypes.IN.A.A(
           dns.rdataclass.IN,
           dns.rdatatype.A,

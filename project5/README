@@ -1,0 +1,15 @@
+High-level approach
+
+
+
+Performance enhancing techniques
+
+Mostly none. 
+Dns server returns a random server.
+For httpserver, the only thing I'm doing that's relevant to performance enhancing is that the http client caches ~9mbs of webpages from urls at the top of the popularity list, which is submitted along with my code files in this milestone because the httpserver needs to read it for caching.
+
+
+Challenges
+
+The dnspython library is extremely hard to use. I feel like I spent at least about as much time figuring it out as I would've if I did't use it. 
+Other than that, it's surprisingly challenging to realize python has libraries for http stuff that I can use, since I had to implement the http logic myself in all previous homeworks. Though the http.server library was not the most sraightforward either, I started by accidentally putting the entire web page in the header.
