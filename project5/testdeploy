@@ -1,0 +1,15 @@
+#!/bin/bash
+
+./deployCDN -p 40012 -o ec2-18-207-254-152.compute-1.amazonaws.com -n cs5700.example.com -u dizhong -i ~/.ssh/cdn_project_ec2
+
+./runCDN -p 40012 -o ec2-18-207-254-152.compute-1.amazonaws.com -n cs5700.example.com -u dizhong -i ~/.ssh/cdn_project_ec2
+
+sleep 10
+
+dig -p 40012 @cs5700cdnproject.ccs.neu.edu cs5700cdn.example.com
+
+wget ec2-34-238-192-84.compute-1.amazonaws.com:40012/wiki/Coronavirus
+
+./stopCDN -p 40012 -o ec2-18-207-254-152.compute-1.amazonaws.com -n cs5700.example.com -u dizhong -i ~/.ssh/cdn_project_ec2
+
+
