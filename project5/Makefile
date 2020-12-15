@@ -4,3 +4,4 @@ all:
 	chmod 755 deployCDN
 	chmod 755 runCDN
 	chmod 755 stopCDN
+	chmod 755 downloadcache
