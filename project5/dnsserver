@@ -25,6 +25,9 @@ def find_ip_list(host_list):
     return ip_list
 
 
+# find closest server based on latitude and longitude
+# because of 10k request limit on ipstack, if anything goes wrong
+# falls back to random selection.
 def find_server(client_ip, ip_list):
     r = requests.get("http://api.ipstack.com/" + client_ip + "?access_key=bda9aedc6efe2edae867bbc4e247d3b7")
     if r.status_code != 200:
