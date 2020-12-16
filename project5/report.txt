@@ -1,0 +1,16 @@
+Design decisions
+
+During the milestone, dnsserver returns a randomly selected server ip address. This has been changed to geographically closest server for optimization purposes.
+Caches are downloaded during deployment because requests could come in immediately after runCDN, and caching generally seems to take a few seconds.
+The cached pages are stored in a folder called cache during deployment, since our CDN might be stopped anytime and would need persistent storage of cache, in contrast to an early-stage implementation where cached pages are a dictionary within the server program.
+The pages selected to be stored in cache are the most popular pages recorded in the csv file. Every replica server stores the same copy.
+
+
+Effectiveness evaluation
+
+Used wget and dig to test the servers.
+
+
+Future work
+
+The amount of work I can put in this project is limited because my fingers have been numbing and my arms hurting, because I have been having RSI problems which were made significantly worse by the amount of coding I was doing earlier this semester. If I was more able to type, I would like to try active measurement for returning the best replica server. I would also like to cache content most likely to be requested by the area the server is in, instead of having every replica server store the same thing, because I imagine for example asia and america would not be interested in the same content, potentially by leaving the cdn on for a long time and have each server store its own copy of most visited pages in csv.
