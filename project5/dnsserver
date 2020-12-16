@@ -3,9 +3,11 @@ import socket
 import sys
 import argparse
 import random
-
+import requests
 import dns.message
 import dns.resolver
+import math
+
 
 def find_ip_list(host_list):
     ip_list = []
@@ -13,8 +15,36 @@ def find_ip_list(host_list):
         resolver = dns.resolver.Resolver()
         resolver_response = resolver.query(host)
         ip = resolver_response.response.answer[0][0].address
-        ip_list.append(ip)
+        r = requests.get("http://api.ipstack.com/" + ip + "?access_key=bda9aedc6efe2edae867bbc4e247d3b7")
+        rjson = r.json()
+        latitude = rjson["latitude"]
+        longitude = rjson["longitude"]
+        # print(latitude)
+        # print(longitude)
+        ip_list.append((ip, latitude, longitude))
     return ip_list
+
+
+def find_server(client_ip, ip_list):
+    r = requests.get("http://api.ipstack.com/" + client_ip + "?access_key=bda9aedc6efe2edae867bbc4e247d3b7")
+    if r.status_code != 200:
+        result_ip = ip_list[random.randint(0, 5)][0]
+    else: 
+        rjson = r.json()
+        print(rjson)
+        latitude = rjson["latitude"]
+        longitude = rjson["longitude"]
+        print(latitude)
+        print(longitude)
+        mindis = 2000
+        result_ip = 0
+        for ip in ip_list:
+            distance = math.sqrt( ((latitude - ip[1]) ** 2) + ((longitude - ip[2]) ** 2) )
+            if distance < mindis:
+                mindis = distance
+                result_ip = ip[0]
+    return result_ip
+
 
 def main():
     if len(sys.argv) == 5:
@@ -37,10 +67,10 @@ def main():
     sock.bind((HOST, PORT))
 
     # resolve randomly (hand-)selected http server ip
-    resolver = dns.resolver.Resolver()
-    host = "ec2-34-238-192-84.compute-1.amazonaws.com"
-    resolver_response = resolver.query(host)
-    ip = resolver_response.response.answer[0][0].address
+    # resolver = dns.resolver.Resolver()
+    # host = "ec2-34-238-192-84.compute-1.amazonaws.com"
+    # resolver_response = resolver.query(host)
+    # ip = resolver_response.response.answer[0][0].address
     
     # hard code list of available servers just cuz
     host_list = ["ec2-34-238-192-84.compute-1.amazonaws.com",
@@ -55,8 +85,10 @@ def main():
         data, addr = sock.recvfrom(1024)
         req = dns.message.from_wire(data)
 
+        print(addr)
+
         # Construct IN A response
-        ip = ip_list[random.randint(0, 5)]
+        ip = find_server(addr[0], ip_list)
         rdata = dns.rdtypes.IN.A.A(
           dns.rdataclass.IN,
           dns.rdatatype.A,
